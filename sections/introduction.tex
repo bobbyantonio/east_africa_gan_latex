@@ -1,0 +1,38 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../images/}}}
+\usepackage{natbib}
+\bibliographystyle{custom_abbrvnat}%Import the bibliography file
+\setcitestyle{authoryear,open={(},close={)}} 
+
+\begin{document}
+
+
+East Africa experiences both extremes of precipitation, suffering both severe droughts that cause famine \citep{gebremeskel_haile_droughts_2019}, and extreme rainfall that significantly impacts the lives and livelihoods of those living in the region~\citep{kilavi_extreme_2018,wainwright_extreme_2021}. For example, flooding of the Shabelle river in Somalia in March 2023 affected an estimated 460,000 people~\citep{floodlist_somalia_2023}, and an estimated 3000-5000 people die on Lake Victoria every year as a result of storms that capsize boats~\citep{watkiss_socio-economic_2020}. 
+
+More accurate forecasts are crucial for improving early earning systems and enabling schemes such as Forecast-based Financing to deliver aid and assistance to those affected~\citep{wilkinson_forecasting_2018}. Accurate rainfall forecasts are therefore crucial for improving attempts at mitigating the effects of these events, through enabling more accurate early warning systems, better disaster response, and agricultural planning. A recent study as part of the WISER project estimated that their work improving early warning systems brought benefits of £3m/yr due to early warning systems on the coast alone, plus additional intangible improvements to the well-being and safety of people living in the area~\citep{watkiss_socio-economic_2021}. Heavy rainfall advisories in Kenya have been demonstrated to be effective at predicting impactful rainfall events, especially over recent years, although there is still a need for increased resolution in the forecasts in order to better enable initiatives such as Forecast-based Financing~\citep{macleod_are_2021}.
+
+Existing forecast products tend to struggle in tropical regions, particularly in capturing the intensity and diurnal cycle of precipitation, perhaps because of the abundance of convective rainfall in these regions, which is not well represented by standard convection parameterisation schemes~\citep{haiden_intercomparison_2012, vogel_skill_2018, woodhams_what_2018}. Convection permitting models have demonstrated improved abilities at capturing the timing and intensity of rainfall~\citep{finney_implications_2019, woodhams_what_2018}, although there still appears to be a tendency for these models to over-predict in this region, and they are computationally expensive to run.
+
+% Recent investigations into model performance also advocate that postprocessing may be required to improve skill in this region~\citep{vogel_skill_2018}.
+
+At the same time machine learning models have improved dramatically over the last decade at a range of tasks such as generating realistic images~\citep{karras_style-based_2019}. This has inspired several high profile attempts to leverage this image-generating ability to create weather predictions from large amounts of historical data~\citep{nguyen_climax_2023, bi_pangu-weather_2022,ravuri_skilful_2021, zhang_skilful_2023,lam_graphcast_2022}. Several works have already demonstrated how machine learning techniques can be used to augment existing forecasts, such as downscaling~\citep{harris_generative_2022, leinonen_latent_2023} and bias correction of forecasts at short~\citep{rasp_neural_2018} and medium ranges~\citep{ben-bouallegue_improving_2023}. However, only a small amount of effort has been applied to developing these techniques in tropical regions, such as regions in Africa, for which the need for improved forecasting is often greater, and which historically have not seen the same forecast skill improvements as mid-latitude areas like Europe and North America~\citep{youds_gcrf_2021}, and so we may be lacking a full view of the strengths of different models.
+
+This raises the question; can we leverage recent advances in machine learning to improve forecasts in tropical regions such as East Africa? In this work we investigate this question by training a particular machine learning model (a Generative Adversarial Network) to postprocess short range rainfall forecasts in East Africa at lead times of 6-18h, in the hope that this can provide an effective means of correcting existing forecasts. In contrast to previous works, we consider the challenging problem of forecasting rainfall in a tropical region, where the majority of rainfall falls as convective rainfall that presents a major difficulty for most weather prediction models~\citep{reynolds_wgne_2018}. We also apply conventional postprocessing techniques (quantile mapping) to the machine learning output and the original forecast, in order to leverage the strengths of conventional postprocessing, and to compare against a much stronger baseline than is considered in many other works. In doing so we hope to shed light on the performance of generative machine learning models in a different regime to what has been considered so far.
+
+This thesis is structured as follows: In chapter~\ref{chap:background} we provide background on weather and climate in the the East African region, statistical postprocessing, and machine learning learning concepts relevant to this work. In Chapter~\ref{chap:methods} we provide details on the data and modelling approach used in this work. The results are then presented in Chapter~\ref{chap:results} and concluding remarks presented in Chapter~\ref{chap:conclude}
+
+
+\section{Contributions and work connected to this thesis}
+
+This work was undertaken under the supervision of Peter Watson and Laurence Aitchison. Additional guidance has been provided by Andrew McRae, Dave MacLeod, John Marsham, Fenwick Cooper and Tim Palmer. Parts of this work have been submitted in abbreviated or abstract form to conferences as part of a poster submission or contributed talks; EGU 2023 (poster)~\citep{antonio_improving_2023}, CRiSM Fusing Data Science and Simulations 2023~\citep{antonio_post-processing_2023}, and Climate Informatics 2023~\citep{antonio_post-processing_2023-1}. For all of these submissions, Bobby Antonio wrote the content of the submissions, with feedback primarily provided by Peter Watson.
+
+
+
+\ifSubfilesClassLoaded{%
+    \bibliographystyle{alpha}
+    \bibliography{references_z}
+
+}{}
+
+
+\end{document}

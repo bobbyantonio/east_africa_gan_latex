@@ -1,0 +1,55 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../images/}}}
+\usepackage{natbib}
+\bibliographystyle{custom_abbrvnat}%Import the bibliography file
+\setcitestyle{authoryear,open={(},close={)}} 
+
+\begin{document}
+
+
+In this work we have investigated how a particular implementation of a conditional Generative Adversarial Network can improve the ECMWF IFS HRES forecast over equatorial East Africa, and how well it can create an ensemble based on this deterministic forecast. Both forecasts were quantile mapped using a neighbourhood approach to utilise the strength of conventional postprocessing tools. The cGAN samples were assessed for spatial realism, the distribution of rainfall, the diurnal cycle, how well it could forecast particular rainfall events, and how well the ensemble was calibrated.
+
+Overall, our findings demonstrate that the 
+cGAN-qm can make significant improvements to the diurnal cycle of the model, and can reduce climatological biases such as the mean bias and correlation between the domain averaged rainfall. The ability of the forecasts to predict particular events was also assessed using the Fractions Skill Score and Equitable Threat Score. These show the cGAN-qm making improvements up to high rainfall values ($99.9^{\text{th}}$ percentile), above which the effects of sampling variability are too large to draw any robust conclusions. The quantile-mapped IFS-qm model achieved higher FSS and Equitable Threat scores at the grid scale. The assessment of ensemble calibration appears to reveal a tendency to be under-confident at low rainfall values and over-confident at high rainfall values, however the spread-error and rank histogram appear to show different behaviour, suggesting that in fact there is a mixture of systematic under- or over-forecasting at high rainfall values.
+
+
+\section{Key limitations}
+
+One limitation is the lack of a baseline ensemble to compare probabilistic forecasts against; towards the end of this project, the ECMWF IFS released ensemble forecast data at the same resolution, so going forward it would be ideal to compare our ensemble predictions to these. It has also been demonstrated in several works (e.g.~\cite{ageet_validation_2022}) that different satellite estimation products vary greatly and have different strengths and weaknesses, such as representation of extreme values~\citep{chapman_climate_2022}, so a more thorough analysis would involve at least one other high-performing satellite product.
+ 
+In general, forecast postprocessing and verification is more meaningful when done towards a particular forecast user's needs, as this allows informed decisions to be made as to how to improve the model. So in future work it would be best to target a particular use-case for these forecasts, and this would also inform the best way to train the generative model. Since the focus of this work is on short term forecasting to aid with early warnings for flooding, it would be particularly insightful to use the output of the cGAN model as input to a hydrology model, and assess any potential benefits there may be. Over Lake Victoria, one of the main hazards is high winds, and whilst rainfall can serve as a proxy for when these winds may happen, it would be interesting to see how the cGAN would perform at forecasting wind speeds as well. The performance of these models on unseen extreme rainfall was also not evaluated; however we have held back a part of the data (the 2018 long rains) for a future evaluation.
+
+We have mostly considered the entire domain as a whole, but as the domain behaviour is very heterogeneous, it could be better to evaluate the models over more smaller areas of more meaningful significance, such as river basins prone to flooding, areas managed by a particular disaster relief agency, areas grouped by climatological similarity, or areas where impacts are particularly high (e.g.~high population density areas). 
+
+Needless to say, our results reflect the particular architecture and modelling choices that we have made here, and do not necessarily reflect the ability of GANs in general to forecast high rainfall values. Thus we are not able to draw strong conclusions about how cGANs perform with this type of data in general, and with more time it would be interesting to fully optimise the way in which the cGAN learns. Our quantile mapping baseline is also limited in that it cannot modify the diurnal cycle, and it would be good to explore whether there are other models that allow correction in time as well as just the distribution.
+
+\section{Potential improvements to the model}
+
+
+
+Given that the choice of output normalisation had the largest impact on the scale of high-quantile rainfall values, it would be interesting to compare more ways of normalising the outputs, to see if they produce forecasts with quantiles more aligned with the observations. This could be something simple like square root normalisation, or training a network to learn the most effective normalisation function. 
+
+There are many possible standard machine learning methods that would be good to try, such as spectral normalisation or batch normalisation after the convolutions as used in~\cite{ravuri_skilful_2021}, or a more nuanced scheme to weight the rainier days more heavily, which given the particularly dry climate seen here may well make significant improvements if performed properly. There are also additional terms we could use in the loss function, such as RAPSD, pooled spatial values, or Fractions Skill Score, that we may expect to help produce well-calibrated forecasts. 
+
+There may also be additional variables that are not currently fed into the model that could be useful. For example, location-specific parameters such as latitude or longitude, topography, or an embedding of location as done in~\cite{rasp_neural_2018}. There is potential that these would improve the results by learning behaviours that are specific to a region and that only weakly depend on the input variables we have. Also we implicitly assume that the IFS forecast captures all of the useful information about phenomena such as the Indian Ocean Dipole, Madden-Julian oscillations and ENSO, which are known to be important factors for forecasting extreme rainfall~\citep{wainwright_extreme_2021, palmer_drivers_2023}. It would be insightful to use indexes of these drivers as additional input, and/or the sea surface temperatures in the part of the Indian Ocean that is contained within our domain. It would be interesting as well to include the initial state of the forecast, if available, to see whether the machine learning model is able to correct for errors in how the IFS evolves this initial state.
+
+
+In \cite{thiery_early_2017} they demonstrate the usefulness of land storm activity from the previous afternoon in predicting morning storm activity over Lake Victoria, so this would be useful additional information to have if it is available to a forecast system. Given the significant effect of Lake Victoria on the local climate, a separate lake and sea mask may be effective in improving forecasts in that area, and it may be better to train a separate model over that region.
+
+There are also other promising machine learning models that would be interesting to compare with, to see if performance improvements can be made. Particularly promising approaches would be diffusion models~\citep{addison_machine_2022}, since they appear to perform well and are easier to train, and models trained directly on a suitable loss function such as the energy score.
+
+% In removing the log normalisation, we move to a model type that has not been as optimised as the one in~\citep{harris_generative_2022}, and so it seems likely that more time spent optimising the parameters such as content loss weighting and learning rates would achieve improved results. 
+
+
+
+
+
+\ifSubfilesClassLoaded{%
+    \bibliographystyle{alpha}
+    \bibliography{references_z}
+
+}{}
+
+
+
+\end{document}

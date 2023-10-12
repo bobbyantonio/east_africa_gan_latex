@@ -1,0 +1,209 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../images/}}}
+
+\begin{document}
+
+\section{East African weather and climate}
+\label{sec:eafrica_weather}
+\subsection{Summary of East African climate}
+
+\begin{figure}[t]
+     \centering
+     \includegraphics[width=0.5\textwidth]{area_range.pdf}
+     
+     \caption{The region we consider in this study. The colouring shows the orography in metres, with height of water surfaces not shown.}
+     \label{fig:cgan_sample}
+\end{figure}
+
+The region we consider in this study is $12^{\circ}\text{S}-15^{\circ}\text{N}$   $25^{\circ}-51^{\circ}\text{E}$, roughly centred around Kenya and Lake Victoria, sometimes referred to as Equatorial East Africa (see Fig.~\ref{fig:cgan_sample}). The region is particularly of interest due to the prevalence of extreme weather that leads to flooding~\citep{kilavi_extreme_2018,wainwright_extreme_2021}, drought~\citep{gebremeskel_haile_droughts_2019} and storms~\citep{thiery_hazardous_2016, woodhams_identifying_2019} that significantly affect the lives of large numbers of people, through the long-term effects on agriculture and the short term effects of extreme rainfall and flooding. 
+
+% \hl{Of the seven most flood-prone countries in Africa, five are in eastern Africa [Li et al., 2016]}
+
+% The area is also known to be unusually arid compared to other areas in Africa at similar latitudes~\citep{hoerling_detection_2006}.
+
+
+Maps of climatological monthly average rainfall (as measured by the IMERG data), are shown in Fig.~\ref{fig:monthly_rain}. The region is large and so the rainfall characteristics are very heterogeneous, but the region can broadly be divided into two regions, a "summer rainfall" region (containing e.g.~South Sudan, North-Western Ethiopia, Djibouti, and Coastal regions) and an ``equatorial rainfall" region (containing e.g.~Kenya, Uganda, Northern Tanzania and Southern Ethiopia)~\citep{nicholson_climate_2017}. Within the summer rainfall region the rain mainly falls in the boreal summer, whilst the equatorial rainfall region has two rainy seasons; the `long' rains in March-May, and the `short' rains in October-December. The long rains tend to be the wettest season, with less interannual variability but more intraseasonal variability, and is generally regarded as the hardest season to forecast~\citep{nicholson_climate_2017, walker_skill_2019, kilavi_extreme_2018}. This may in part be due to the heterogeneity of the long rain months, and some studies have shown the behaviour of these months can be quite different and have different drivers~\citep{camberlin_east_2002}. The short rains typically have more interannual variability and less intraseasonal variability~\citep{black_observational_2003}. Over the long rains from 1985 up until 2017 there has been a documented trend of decreasing rainfall~\citep{wainwright_eastern_2019, liebmann_understanding_2014}, although 2018 and 2020 had particularly wet long rains~\citep{palmer_drivers_2023}.
+
+Freshwater lakes, such as Lake Victoria and Lake Tanganyika, amongst the largest freshwater lakes in the world, have a significant impact on the surrounding weather. Around Lake Victoria there is rain for much of the year with storms frequently occurring on or near the lake~\citep{macleod_drivers_2021, chamberlain_forecasting_2014, woodhams_identifying_2019}. These cause wind and waves that cause significant damage to the large population that relies on it, with an estimated 3000-5000 people dying each year due to capsizing or damaged boats~\citep{ifrc_world_2014}, so that improved forecasting of storms in this area would be incredibly valuable. 
+
+There are also interesting orographic features in the area, such as Mt. Kilimanjaro and Mt. Kenya, and mountains extending along the East African rift from the the Ethiopian highlands down either side of Lake Victoria (which we refer to as the Rift Valley in this work). A gap in this range, the Turkana channel, extending from Northwest Kenya to South Sudan, is another important feature in this area that affects moisture transport via the Turkana jet that flows through it~\citep{nicholson_turkana_2016}.
+
+A key mechanism that affects the rainfall amounts over East Africa is the Indian Ocean Walker circulation, whereby air ascends over the Eastern Indian Ocean and subsides over East Africa, with westerly surface winds transporting moisture away from East Africa~\citep{nicholson_climate_2017, palmer_drivers_2023}. This circulation is strongest during the short rains and weaker although still detectable in the long rains~\citep{pohl_intraseasonal_2011}. This circulation is strongly linked to the sea-surface temperatures (SSTs) over the Indian Ocean, particularly when there are warmer SSTs in the Western Indian Ocean and cooler SSTs in the East, known as a positive Indian Ocean Dipole (IOD)~\citep{nicholson_climate_2017, wainwright_extreme_2021}. 
+In~\cite{black_observational_2003} they observe that large positive IOD events are linked to wetter short rains, with the proposed mechanism that the IOD creates anomalous easterlies that inhibit moisture transport away from East Africa. They also observe that climatologically the Indian Ocean temperature gradient is closer to zero during the short rains, which is also when variability of the gradient is highest, so that the rainfall in the short rains is more variable and sensitive to the IOD. In~\cite{nicholson_long-term_2015} the IOD was found to be the second highest correlate with the short rains (after the surface winds) and other studies have identified the IOD as a key driver of the short rains~\citep{wainwright_extreme_2021, macleod_causal_2021}.
+
+Another factor that drives the seasonal variability is the El Ni\~{n}o Southern Oscillation, which has a weaker effect than the IOD~\citep{nicholson_long-term_2015}, both directly and indirectly through complex interactions with the Indian Ocean~\citep{black_observational_2003}. In~\cite{macleod_causal_2021} they find that the direct effect of ENSO during the short rains is via a wet-dry dipole with Lake Victoria at one end and the coast at the other, with a weaker effect than the IOD. They suggest that ENSO and Pacific SSTs affect the easterly wind, which inhibits the westerlies that bring moist air from the Congo basin, and modifies the strength of the Turkana jet. Similar effects are observed in~\citep{finney_effect_2020} where they argue that westerlies over the Lake Victoria region bring moisture in from the Congo basin and can significantly increase rainfall in the long rains. 
+
+At shorter timescales, an important process is the Madden-Julian Oscillation (MJO), regarded as one of the dominant drivers of intraseasonal rainfall. This is an eastward propagation of anomalous circulation, with enhanced convection in the western part (starting in the west Indian Ocean) and suppressed convection in the eastern part, with a period of 30-60 days~\citep{nicholson_climate_2017}. In~\cite{pohl_influence_2006} they study the effects of the MJO on Kenya and Tanzania, finding different areas are affected in different ways by the MJO; in highland areas the MJO enhances rainfall via westerlies that instigate convection in the later MJO phases, whilst along the coast it is due to moisture transport from the Indian Ocean when convection over the ocean is suppressed. 
+
+Another important factor identified by~\cite{finney_effect_2020} is the effect of tropical cyclones in the Indian Ocean; these have an effect on moisture transport via the suppression or enhancement of westerlies from the Congo basin, depending on the location of the tropical cyclone in the Ocean.
+
+
+% \citep{pohl_intraseasonal_2011}; look at winds in upper and lower troposphere, and find anti-correlations in these winds except in the boreal summer. In OND these winds are also the most variable. They observe two important frequencies wrt to these winds; 30-60 day (consistent with MJO) and 4-5 years (consistent with ENSO). They observe that very strong El Nino events have a significant impact on wind shear. East African rainfall increases during El Nino events where the SST gradient is low (since El Nino has warm water in the Western Pacific), and during La Nina years where the gradient is high (since La Nina has warm water in the East Pacific). El Nino and El Nina peak in OND so have greatest effect there. ENSO and MJO occur on very different timescales. They demonstrate that ENSO has an effect on the seasonal level, but not intraseasonal level. 
+
+
+
+
+
+% Gitau et al 2013 Spatial coherence and potential predictability assessment of intraseasonal statistics of wet and dry spells over equatorial East Africa.
+% Camberlin and Wairoto: Intraseasonal wind anomalies related to wet and dry spells during the long and short rainy seasons in Kenya
+
+% Short rains interannual variability; stronger. One reason is the strong interannual variabilty of westerlies [Pohl and Camberlin 2011; Intraseasonal and interannual zonal circulations over the equatorial Indian Ocean]
+
+% Hastenrath 2011 Circulation mechanisms of Kenya rainfall anomalies
+
+% Berhane and Zaitchik use this as an explanation of why the MJO have a stronger influence over the long rains than the short rains. This is particularly the dominant process driving the short rains.
+
+
+
+
+% Western IO temperature explains a significant amount of the variability in the long rains, particularly at the beginning and end of the season ~\citep{palmer_drivers_2023} [Drivers of interannual variability of the East African ‘Long Rains’.]
+
+
+
+% Zaitchik, B. F. Madden–Julian Oscillation impacts on tropical African precipitation. Atmos. Res. 184, 88–102 (2017).
+% 2 articles by Pohl and Camberlin 2006; Influence of the Madden-Julian OScillation on East African Rainfall
+
+
+% \hl{[TODO: drivers of rainfall, IOD, ENSO, MJO]}
+
+
+\begin{figure}[!ht]
+     \centering
+     \includegraphics[width=0.8\textwidth]{month_averages.pdf}
+     
+     \caption{Average rainfall in each calendar month over the period 2001-2020.}
+     \label{fig:monthly_rain}
+\end{figure}
+
+
+
+% NOTE: this suggests that hazards are mainly wind in this region, not flooding? But predicting extreme rainfall can act as a proxy for where storms are forming.}
+
+\subsection{Overview of convective rainfall}
+
+
+
+The rainfall in this East African region is dominated by convective rainfall~\citep{dezfuli_precipitation_2017}. This is rainfall that develops from the ascent of moist heated air (convection) from near the earth's surface to high altitudes. This convection is usually split into two types; shallow convection, where the air ascends only a small amount within the troposphere, and deep convection, where the air ascent covers a large proportion of the troposphere; deep convective systems are associated with heavier rains, whilst is it often assumed that shallow convection does not produce rainfall~\citep{stensrud_convective_2013}. 
+
+Convection is usually described in terms of the behaviour of air parcels in the atmosphere~\citep{barry_atmosphere_2009}, assuming the parcels behave adiabatically (i.e.~they do not exchange heat with their surroundings). If there is sufficient local heating at the earth's surface, then a moist (unsaturated) air parcel can ascend; if it travels high enough it reaches the `lifting condensation level' (LCL) where the water vapour condenses (saturates) and releases latent heat; this has the effect of reducing the rate at which the air parcel loses heat, thus enabling it to rise further. Eventually the air parcel may reach the `level of free convection' (LFC) where it has higher temperature and cools more gradually than the surrounding air, enabling it to freely ascend further, until it reaches a point of equilibrium with the surrounding atmosphere (the equilibrium level, or EL). The momentum of the air parcel may then overshoot this equilibrium level due to the momentum it has gained. The extent to which air can ascend in this way is often quantified via the convective available potential energy (CAPE), which measures the total work done per unit mass for an air parcel that is lifted from the LFC to the EL, such that deep convection can occur when CAPE>0~\citep{stensrud_convective_2013}. Similarly, we can quantify how much an air parcel is inhibited from rising from the surface of the earth to the LFC; this is is quantified by the convective inhibition (CIN), which is the negative of the work required per unit mass to lift a parcel from the surface to the LFC, such that positive CIN values indicate a barrier for convection to occur. The process of vertically moving air produces strong vertical air currents which are characteristic of a convective rainfall system~\citep{houze_jr_mesoscale_2004}. These systems are also typically seen in conjunction with a stratiform rain system (i.e.~rain coming from clouds with a low vertical extent but larger horizontal extent). 
+
+\subsection{Performance of precipitation forecasts in East Africa}
+
+Existing numerical weather prediction (NWP) models, such as the European Centre for Medium-Range Weather Forecasts (ECMWF) Integrated Forecast System (IFS) used in this work, are made up of several different models of the many complex processes that are relevant to weather prediction~\citep{ecmwf_section_2023}, coupled together where necessary. These models capture atmospheric processes such as wind and precipitation, waves, ocean processes such as temperature and ocean currents, plus the effects of different land surfaces such as vegetation. Creating predictions with these models requires simulation of the relevant physical processes, for variables at many different heights, such that there is a huge computational cost required, and typical forecast resolutions are limited to around 10km.
+
+Convective cells occur at length scales of 25-10km~\citep{barry_atmosphere_2009, stensrud_convective_2013, bryan_resolution_2003} so existing forecast products, which typically operate at resolutions of $\sim10\text{km}$, have too low resolution to resolve these high resolution convective processes. Instead, the overall effects of subgrid convective processes are captured through a \emph{convection parameterization} scheme~\citep{stensrud_convective_2013}. In these schemes, the effects of the unresolved subgrid convection processes are approximately captured as average effects on the resolved scale.
+
+
+Forecast products that use convection parameterization have been demonstrated to capture the approximate relationship between rainfall variation in the East African tropics and drivers such as the Madden-Julian oscillations and Indian Ocean sea surface temperature. However, they tend to predict too many low intensity rainfall events and perform poorly at predicting heavy rainfall~\citep{woodhams_what_2018, chamberlain_forecasting_2014, vogel_skill_2018, walker_skill_2019, bechtold_representing_2014, haiden_intercomparison_2012}. Additionally, these models tend to do better at forecasting precipitation at longer than daily timescales, but do not model the distribution of rainfall throughout the day (the `diurnal cycle') well~\citep{kim_tropical_2013, macleod_drivers_2021, bechtold_simulation_2004}, which is likely because of the convective parameterisation schemes used in the models~\citep{vogel_skill_2018, marsham_role_2013, bechtold_representing_2014}. 
+
+In recent years, it has become computationally feasible to run `convection permitting' (CP) models at higher resolutions ($\sim4\text{km}$) for which the model can better capture convection processes without using a parameterization scheme. Several studies have investigated how well these CP models correct precipitation bias in East Africa~\citep{finney_implications_2019, cafaro_convection-permitting_2021, woodhams_what_2018, chamberlain_forecasting_2014, kendon_enhanced_2019, senior_convection-permitting_2021}; these studies have found that CP models tend to improve the overall rainfall distribution (at both high and low rainfall). They also tend to produce a more realistic rainfall frequency, as well as making the diurnal cycle more in line with observations. However, the rainfall distribution is not uniformly improved over the region~\citep{senior_convection-permitting_2021}, and many of these works demonstrate a tendency to over-predict rainfall. Some biases also still remain in diurnal cycle and intensity over the Lake Victoria region, and the models do not capture some of the nighttime peaks in areas such as South Sudan~\citep{finney_implications_2019, chamberlain_forecasting_2014}). 
+
+Whilst in some cases there is uncertainty as to the reliability of the satellite data used to assess these models, these results suggest that even with a CP model there will still remain significant biases for the diurnal cycle and rainfall intensity. It remains to be seen whether or not these biases can be overcome through further increases in resolution or model improvements, but in the meantime there is a clear place for using post-processing methods to correct the remaining biases in the models.
+
+
+
+
+
+\subsection{Projected changes in the climate of this region}
+
+We now focus on what the projected changes are in East African rainfall; this is important both to assess how impactful high rainfall will be in the future, and also useful to bear in mind when assuming stationarity between the historical data we use to train on and the data that we test our predictions on.
+
+There have been many studies assessing how the precipitation in East Africa is projected to change over the next century. These studies typically use global model projections from the Coupled Model Intercomparison Project phase 6 (CMIP6) and phase 5 (CMIP5)~\citep{taylor_overview_2012, eyring_overview_2016}. Many studies also use projections from the CORDEX (Coordinated Regional Climate Downscaling EXperiment) framework~\citep{giorgi_regional_2015}, in which regional climate models downscale climate projections to $0.44^{\circ}$ ($\sim50$km) resolution. Some also use projections from a subsequent initiative, CORDEX CORE (Coordinated Output for Regional Evaluations), which downscaled projections to a higher resolution of $0.22^{\circ}$ ($\sim25$km) resolution, although fewer simulations are available within this initiative.  
+
+The studies we consider use projections for 3 Shared Socioeconomic Pathways (SSP), that specify a particular scenario of climate change based on the local and global policies that are implemented. Each SSP is also associated with a Representative Concentration Pathway (RCP) that specifies the concentration of greenhouse gases in each scenario (although note that for CMIP5 only the RCP value is specified, but for ease of notation we will still refer to these with the SSP pathway from CMIP6). Since we are interested in short term forecasts, we focus here on metrics that quantify rainfall on daily timescales; days with rainfall over 20mm (R20), the maximum daily rainfall rate (RX1), and the Simple Daily Intensity Index (SDII, defined as the mean rainfall on days where total rainfall is greater than 1mm).
+
+\cite{dosio_projected_2021} do a comprehensive analysis of global models (34 from CMIP5 and 29 from CMIP6) and regional downscaled simulations from CORDEX (29) and CORDEX CORE (25) over the period 2071-2100, under a low (SSP1-RCP2.6), medium (SSP2-RCP4.5) and high (SSP5-RCP8.5) emissions pathway. They group their analysis into different regions, including the Horn of Africa, Eastern Tanzania and Mozambique (which they denote EAF), and the Ethiopian Highlands. This study highlights disagreements between the global and regional models, and so highlights the subtleties in how climate change may affect particular areas. For the high emissions scenario (SSP5-RCP8.5), RX1 shows the most pronounced changes and is projected to increase during December-February and September-November. However, while the different types of model ensembles show the same average change in RX1, there are significant disagreements between models as to whether RX1 will increase or decrease, and by how much. There is weaker signal and less agreement for changes in March-May, and June-August, with the ensemble means indicating a possible increase in RX1 around the Ethiopian highlands, South Sudan and North Western Kenya. There are less obvious changes for the low (SSP1-RCP2.6) and medium emissions scenario (SSP2-RCP4.5); for example the CMIP6 models are in high agreement that RX1 will increase in SSP2-RCP4.5 over the Ethiopian highlands, but none of the other ensembles have strong agreement on this change. 
+
+The SDII show increases on average for all model types, mainly in December-February and March-May for SSP5-RCP8.5, with particularly high agreement over southern central Africa (which in~\cite{dosio_projected_2021} contains Lake Victoria and Lake Tanganyika), and significant changes occurring mainly in the Rift Valley. For the low and medium emissions scenarios however, there are no obviously significant differences and little agreement between the individual models.
+
+
+A more localised study has looked at the projections of 15 of the CMIP6 models under the medium and high emissions scenarios~\citep{ayugi_future_2021}. For the long rains the projections show overall upward trends in R20 and SDII, particularly for the high emissions scenario, and particularly concentrated over Lake Victoria and Northern Tanzania. Over the short rains, the projections also show an increase in R20 and SDII, although with less separation between the two scenarios. These results agree with another localised study that used a regional model downscaled to around 7km over Lake Victoria, which found an increase in rainfall intensity under SSP5-RCP8.5~\citep{thiery_hazardous_2016}, as well as under lower emissions scenarios based on projections from the (coarser) CORDEX ensemble.
+
+
+Within the Future Climate for Africa programme, the HyCRISTAL project~\citep{finney_scientific_2019} brought together information about the effects of climate change under scenario SSP5-RCP8.5 on rainfall in East Africa. As part of this, a Met Office convective-permitting model run at 4.5km over Africa (CP4-Africa, or CP4A)~\citep{stratton_pan-african_2018} was compared to a 25km model that used parameterized convection (P25), for projecting the decade 2100-2110. In~\cite{kendon_enhanced_2019} this analysis was performed across the whole of Africa, looking at 3hr rainfall accumulations for the wettest 3 month period at every grid cell, whilst in~\cite{finney_effects_2020} the analysis is more targeted to the East Africa region, and looks at the annual climatology. In~\cite{kendon_enhanced_2019} they demonstrate that the CP4A model has overall lower biases in the extreme precipitation ($99^{\text{th}}$ percentile) intensity over the wet seasons, suggesting that the model captures the processes underpinning these better than the P25 model. For extreme rainfall intensity, in~\cite{finney_effects_2020} they show that both models project a 70-90\% increase around the Ethiopian highlands, but differ in other areas; the CP4A model shows a a widespread increase across the Rift Valley of around 50\% with only small changes across Somalia and Kenya, whilst the P25 model shows more concentrated, larger increases of 70-90\% in the eastern Rift Valley and eastern Kenya. This appears to be due to changes in moisture transport, with the CP4A model showing reduced easterly moisture flux, thus changing the moisture transport between the Rift Valley and the Congo basin. In another study over a region slightly further south,~\cite{chapman_climate_2022} fitted extreme value distributions to the maximum daily rainy season rainfall, and assessed differences in parameters produced by the CP4A model as well as models with parameterized convection. Their results show that the CP4A model produced an extreme value distribution with parameters closer to the weather station data. Under SSP5-RCP8.5, the CP4A model projected an average 36\% increase in return values, and in general projected a lower increase relative to the parameterized models, except for the more frequent events (around 1-in-1yr). However, it is hard to draw strong conclusions about extreme precipitation from these studies, since they come from a single model run rather than an ensemble, but it does suggest that there may be processes that aren't being captured well by models with parameterized convection.
+
+% chapman: fit an extreme value distribution to the maximum daily rainy season rainfall. SSP5-RCP8.5. Compare CP4A with P25 and CORDEX ensemble. Use cluster analysis to group pixels into areas with similar extreme rainfall behaviour.
+% CP4A fits current day GEVD data better.
+% lots of uncertainty due to different satellite products used. an area slightly further south than ours (Lake Victoria near the top). 
+% CP4A return level percentage increase; comparable to P25 model at low return periods (around 1 year) but much lower than parameterised models for high return periods.
+% they use a delta change method to estimate return period rainfall values; I think just find change in parameters for CP4A model and then apply the same shifts to the actual observed values at weather stations.
+
+There are also known biases in the CMIP models in the predictions of rainfall onset, duration and intensity in the long and short rains~\citep{schwarzwald_understanding_2023, ayugi_comparison_2021}. Additionally, the CMIP5 models show an increase in precipitation over the Horn of Africa, whilst observations show a decreasing trend in the long rains~\citep{rowell_reconciling_2015, yang_east_2014}. Overall then, whilst there are still uncertainties in which scenario is the most likely, and with how well the models are capturing the underlying processes correctly, the results indicate the possibility of rainfall becoming more intense some areas in East Africa, and so motivates the need for improved forecast skill. 
+
+
+% In three studies that compare these to models at coarser scale (25km) that use convection parameterization, they observe that a convective-permitting model generally has stronger alignment of diurnal cycle and has a shift towards heavier rainfall compared to a model that used a convective parameterization scheme~\citep{kendon_enhanced_2019, finney_implications_2019, finney}. This suggests that projections from model ensembles like CMIP6 and CORDEX may well be underestimating the increases in extreme rainfall, and may not accurately reflect where the most significant changes will take place, although without an ensemble of convection permitting models it is hard to draw robust conclusions.
+
+% Finney et al 2020
+% CP4 models; also closer to the scale of the orography data.
+% Running CP4 and P25 regional models. RCP8.5 pathway. 
+% They compare CMORPH and TRMM and find them to be similar
+% One of the plots shows higher frequency of rainfall (i.e. higher frequency of rainy 3-hr periods) for the P25 model cf the CP4 models. P25 and CP4 have similar total rainfall over wet 3hr periods, but differ in average rainfall rate, rainfall frequency, and extreme rainfall rate.
+% Percentage increase for CP4 model for 99th percentile shows increases mainly over Ethiopian highlands and in EA rift valley. 
+% Also interesting that the increases in extreme rainfall for P25 are concentrated to places where there are significant mesoscale processes, whereas CP4 shows higher spatial variability and increases over more of the region that are less concentrated.
+% The CP4 model shows an increase in Westerlies relative to the P25 model, such that there is moisture transport from the Indian Ocean is decreased and moisture transport from the Congo basin is increased. Although both models project an increase in Easterlies. 
+% They discuss anomalous westerlies increasing rainfall over Lake Victoria; think this agrees with ~\citep{finney_effect_2020}?
+% They suggest that over Lake Victoria the model with parameterized convection performs well (at capturing overall rainfall, not diurnal cycle I am assuming?), since the drivers are at a sufficiently large scale. Can't remember what other studies shown for diurnal cycle. 
+
+
+% Kendon 2019:
+% Pan-African study of behaviour now and for a decade similar to conditions in 2100.
+% Look at the wettest three month period for each location. 
+% Compare with regional 25km model (R25).
+
+% Observe that CP4A model captures distribution of rainfall better; R25 too frequent and light.
+% CP4A model shows larger decreases in rainfall frequency over the Ethiopian highlands and Rift Valley; suggesting that rainfall will occur less often but with greater intensity. 
+% CP4A model less biased in 3hr mean intensity now, and projects larger increases in 3hr intensity over much of Africa.
+% Change in 99th percentile intensity; increase in CP4A, particularly over rift valley. 
+% Exceedance of 3hr 99.9th percentile; no significant differences.
+% Also shows smaller increase over the Congo, agrees with Finney 2020 increase in anomalous westerly flow. 
+% They show improved alignment against obs of rainfall fractional contribution for CP4A over E Africa. Also fractional contribution shows a higher increase from higher rainfall (above around 10mm/hr).
+% Change in return period of exceeding 60mm over 3hrs at the 25km scale using CP4A is from 30yrs to around 3-4yrs. 
+
+
+
+
+
+
+% Finney 2019:
+% Lookin at projections for 97-2007.
+% Similarly to Kendon, they find fractional contribution for CP4 is closer to satellite rainfall observation products. 
+% Mean seasonal rainfall; CP4A shows increased positive biases  over Lake Victoria and Madagascar; biases are opposite sign over Lake Victoria for Long and Short rains.
+% They also observe decrease over Congo and increase over LV. 
+% Over LV: peaks slightly too late and bias towards too much rainfall. Improvement in CP models seems to be in mountains surrounding LV. 
+% Diurnal cycle improvements; particularly for East basin of LV, but CP4A still overpredicts the peak. 
+% They suggest that it is a reduction in moisture transport into Congo basin (rather than increased moisture flux from Congo basin)
+
+
+% also improved frequency of rainfall; higher number of dry 3hr periods which aligns better with observations. 
+% Shows anomalous Easterly flux in long rains?
+
+
+% \hl{An even more localised study has looked at projections over Lake Victoria and its immediate surroundings}~\citep{luhunga}, since it E.g. Luhunga et al. over Lake Victoria.
+
+
+% \subsection{Subdomains}
+
+% Domains considered; in \citep{woodhams_what_2018} they have quite a large subdomain centred on Northern Tanzania. In \citep{finney_implications_2019} they have much more specific regions, including the West and East edges of Lake Victoria, and East African Rift (centred around Lake Victoria).
+
+% Ethiopian highlands; NW contains lake that is source of the blue Nile. Also there has been deadly flooding into Somalia from rivers that come from Ethiopian highlands.
+
+% Convective rainfall driven by various types of convectively-coupled equatorial waves of different freqeuncy, from Madden-Julian oscillations with periods of 30-90 days, to inertio-gravity waves with periods of .. \citep{Kim2013TropicalTRMM}.
+
+
+
+
+
+
+
+% \citep{Macleod2021DriversRisk} looks at subseasonal (1-4 weeks) prediction, finding that existing models are able to capture the approximate relationships between the drivers of high rainfall (Madden-Julian oscillations and Kelvin waves), although the models tend to be overconfident for higher frequency events, and don't capture the relationship between weekly rainfall and MJO phase in some cases. They identify two modes where flooding may occur; one due to high rainfall and one due to moderate rainfall occuring on 
+
+% \citep{Haiden2012IntercomparisonScore}. 
+
+\ifSubfilesClassLoaded{%
+    \bibliographystyle{alpha}
+    \bibliography{references_z}
+
+}{}
+
+
+\end{document}

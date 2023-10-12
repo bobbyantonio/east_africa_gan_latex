@@ -1,0 +1,42 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../images/}}}
+\usepackage{natbib}
+\bibliographystyle{abbrvnat}%Import the bibliography file
+\begin{document}
+
+
+
+
+
+For observational data, we use the Integrated Multi-satellite Retrievals for GPM (IMERG) dataset; this is calculated through satellite observations of microwave and infrared by the array of Global Precipitation Measurement (GPM) satellites, with subsequent calibration incorporating rain gauges~\citep{huffman_nasa_2018}.
+The observations are half-hourly at a resolution of $0.1^{\circ} \times 0.1^{\circ}$ ($11\text{km} \times 11\text{km}$), with precipitation rates given in mm/hr representing the average rainfall over the entire half hour period\footnote{\href{https://gpm.nasa.gov/data/imerg}{https://gpm.nasa.gov/data/imerg} accessed 29th November 2022}. 
+
+Whilst the IMERG data does not perfectly represent the true rainfall, it performs reasonably well at capturing the diurnal cycle and distribution of rainfall in East Africa~\citep{dezfuli_validation_2017, roca_comparing_2010, camberlin_major_2018} compared to other alternatives, particularly given the scarcity of reliable rain guage data in the area. Kimani et.~al.~identified it as one of the best performing products in the area, although it still has systematic errors, particularly at high altitudes~\citep{} (Dinku et al 2007 from finney et al), which means there may be areas in our study for which these observations are particularly unreliable~\citep{kimani_assessment_2017}. A dry bias has also been observed in several works (e.g.~\citep{vogel_skill_2018}). In~\citep{finney_implications_2019} they identified reasonable differences between two IMERG and CMORPH products.
+
+Overall though it provides a good source of large amounts of high temporal and spatial resolution data, and it has been used in other studies in this region (e.g.~\citep{woodhams_what_2018, finney_implications_2019, cafaro_convection-permitting_2021}), and we expect it to be much closer to the true precipitation than the forecast is.
+
+One alternative would the point; whilst many studies use reanalysis, it is more informative to use observations that are in no way influenced by the model.
+
+The forecast used is the the ECMWF IFS HRES deterministic hourly forecast~\citep{ecmwf_operational_2023} (interpolated from $9\text{km} \times 9\text{km}$ resolution to $0.1^{\circ} \times 0.1^{\circ}$) as this tends to perform the best, or at least comparably to other similar models~\citep{haiden_intercomparison_2012}. On top of the 9 variables used in~\citep{harris_generative_2022}, we add 11 extra fields from temperature, convective precipitation, vertical velocity, and relative humidity (some of which are at several geopotential heights; see Appendix~\ref{app:fcst_vars}). Due to the large number of null values for convective inhibition, this variable was excluded, although time permitting we will include it for future runs with appropriate null handling. IFS forecasts are provided at 00h and 12h and so for each observation the nearest forecast within a 6-18h window was selected, so that we are tackling a problem between nowcasting and medium-range weather prediction (however it is expected that these methods are equally applicable to longer lead times).
+
+The model takes IFS forecast variables plus the orography and land-sea mask as inputs, and uses IMERG as the ground truth. Note that the land-sea mask labels lakes as well as sea, which is important given the presence of Lake Victoria and other nearby lakes. We convert all cumulative variables (such as precipitation) to be the average over the following hour, and instantaneous variables (like wind speed) are taken as the value on the hour. So e.g.~for a forecast time of 1pm, the precipitation is be the average mm/hr between 1-2pm, and instantaneous variables like wind speed are the values at 1pm. 
+
+The dataset was split up as follows:
+\begin{itemize}
+    \item Train: March 2016 – February 2018 and July 2018 – Sept 2020 (excluding validation months)
+    \item Validation: Jun 2018, Oct 2018, Jan 2019, March 2019
+    \item Test: October 2020 - September 2021, March - May 2018
+\end{itemize}
+The choice of the validation set is such that a month from each of the different seasons is used to gauge which model performs best over a range of typical scenarios. Note also that we use the 2018 long rains (March-May) to test against since this was a period of particularly heavy rainfall~\citep{kilavi_extreme_2018}, and so will shed light on how well the model extrapolates to extreme rainfall. 
+
+
+
+
+\ifSubfilesClassLoaded{%
+    \bibliographystyle{alpha}
+    \bibliography{references_z}
+
+}{}
+
+
+\end{document}

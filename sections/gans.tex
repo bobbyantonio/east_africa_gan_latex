@@ -1,0 +1,62 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../images/}}}
+
+
+\begin{document}
+
+\section{Generative Adversarial Networks}
+\label{sec:gans}
+
+In Sec.~\ref{sec:stat_proc} we discussed the successful applications of Generative Adversarial Networks (GANs) to several tasks in weather forecasting and climate projections, including postpropcessing and downscaling. Here we will provide an overview of GANs and the particular implementation we use in this work.
+
+     
+\begin{figure}[ht!]
+     \centering
+         \includegraphics[width=0.85\textwidth]{images/Architecture_overview_EAfrica.drawio.pdf}
+         \caption{A schematic diagram of the how the conditional GAN is structured in this work. The Generator takes IFS variables, a land-sea mask (LSM), orography, and noise as input, and learns to generate a realistic looking image of rainfall. The discriminator also takes the IFS variables, land-sea mask and orography as input, and learns to distinguish between forecasts that the generator produces and those drawn from the observation set. The generator and discriminator are trained alternately, by updating their parameters such that the training loss (calculated using the loss function) is reduced.}
+         \label{fig:gan_schematic} 
+\end{figure}    
+
+
+In the original GAN setup there are two models, a `generator' and a `discriminator'~\citep{goodfellow_generative_2014}, each with opposing training objectives; the generator is an artificial neural network that is trained to produce realistic-looking images, whilst the discriminator is an artificial neural network that is trained to classify whether a given image is real or produced by the generator. Thus the two models are in competition, which is where the `adversarial' part of the model name comes from. In order to train the model, we construct suitable loss functions for the generator and discriminator separately, that penalises each model in different ways; the generator is penalised when the discriminator classifies the generated output as fake, and the discriminator is penalised when it incorrectly classifies a generate image as real, or vice-versa. 
+
+Whilst GANs do not produce an explicit representation of the probability distribution, the fact that artificial neural networks are universal function approximators means that, at least in principle, the GAN can generate samples that are consistent with the real image distribution (unlike methods that assume a simplified form for the distribution). Common loss functions used in training machine learning models, like the mean-squared error, tend to produce blurry forecasts and suffer from the `double-penalty' problem (see e.g.~\cite{wilks_forecast_2019}). A GAN however effectively attempts to learn a more complicated loss function (via the discriminator) and so in principle can create more realistic samples.
+
+% One way to think of this setup is that, rather than trying to train a model based on a particular static loss function (such as mean-squared error) the discriminator is trained to become a bespoke loss function for the generator that can hopefully arrive at a more nuanced concept of dist
+
+In mathematical notation, we write the generator function as $G(\mathbf{z};\theta_G)$, where $\mathbf{z}$ is random noise drawn from a distribution $p(\mathbf{z})$ (in this case a Normal distribution), and $\theta_G$ are parameters of the neural network that are updated during training. Note that the noise input $\mathbf{z}$ is the source of the ensemble generation, unlike physical NWP models where the ensemble is generated through e.g.~varying the initial conditions. We write the discriminator function as $D(\mathbf{y};\theta_D)$, where $\theta_D$ are the neural network parameters, and $\mathbf{y}$ is drawn from either the real or generated set of target images. In the original GAN, $D(\mathbf{y};\theta_D)$ produces a value in the range $[0,1]$ which represents how strongly the discriminator network classifies the input as real, with small values indicating fake and values close to 1 indicating real. 
+
+The generator parameters are learnt by minimising the generator loss function $\mathcal{L}_G$, which penalises situations where the the image $G(\mathbf{z}; \theta_G)$ is classified as fake (i.e.~the discriminator produces a value close to 0 when evaluating the generated image):
+\begin{align}
+    \mathcal{L}_G(\mathbf{z}; \theta_G, \theta_D) &= -\log ( D(G(\mathbf{z}; \theta_G); \theta_D))
+\end{align}
+The discriminator parameters are learnt by minimising the discriminator loss function $\mathcal{L}_D$, which penalises cases where the discriminator incorrectly classifies a generate image as real, or vice-versa:
+\begin{align}
+\mathcal{L}_D(\mathbf{y}_{real}, \mathbf{z}; \theta_G, \theta_D) &= -\log(D(\mathbf{y}_{real}, \mathbf{z} ; \theta_D)) - \log ( 1 - D(G(\mathbf{z};\theta_G); \theta_D))
+\end{align}
+where $\mathbf{y}_{\text{real}}$ is an image taken from the set of real images. Note the absence of any explicit comparisons between $\mathbf{y}_{\text{real}}$ and $G(\mathbf{z}; \theta_G)$; all comparisons are done implicitly via the discriminator. 
+
+The two networks are then trained alternately using these loss functions, until the quality of the generated samples is sufficiently high. It can be shown that for a given generator, if the discriminator is fully optimised, then $\mathcal{L}_D(\mathbf{y}_{real}, \mathbf{z}; \theta_G, \theta_D)$ measures the Jensen-Shannon divergence between the distribution of real images and fake images~\citep{goodfellow_generative_2014}. Thus in order to try to ensure that the discriminator is close to optimal, the discriminator is usually trained for more steps than the generator.
+
+A `conditional' GAN (cGAN) is an extension of this basic GAN which takes a set of input conditions from which the generated images are based (in our case, these conditions are the forecast variables, orography and land sea mask)~\citep{mirza_conditional_2014}. A cGAN can then learn to generate samples from the conditional probability distribution of the images (although it does so without having an explicit representation of the distribution). In Fig.~\ref{fig:gan_schematic} a schematic diagram shows how the cGAN in this work is setup to be conditioned on different inputs.
+
+Whilst GANs have been demonstrated to be extremely effective, there are known issues that can arise in training them, related to the balance in training the generator and discriminator. Mode collapse can occur whereby the generator learns to output whatever image maximises $D(\mathbf{y};\theta_D)$, for example when the generator is optimised for too long without the discriminator being optimised~\citep{goodfellow_generative_2014}. Instabilities in training can also occur when the discriminator is able to learn to distinguish perfectly between real and fake images so that the generator is no longer able to learn~\citep{arjovsky_towards_2016}.
+
+For these reasons, modifications of the original GAN setup have been proposed. In this work we use a Wasserstein GAN~\citep{arjovsky_wasserstein_2017}, which has been demonstrated to improve training stability in many cases~\citep{creswell_generative_2018}. For a Wasserstein GAN, instead of producing a number in the range $[0,1]$, the discriminator is trained to output low numbers for real samples and high numbers for fake samples (often the discriminator is renamed to be a critic in this case). The modified loss functions for a Wasserstein GAN are~\citep{gulrajani_improved_2017}:
+\begin{align}
+\mathcal{L}_G (\mathbf{z} ; \theta_G, \theta_D) &=  D( G(\mathbf{z} ; \theta_G) ; \theta_D) \\
+\mathcal{L}_D(\mathbf{y}_{\text{real}}, \mathbf{z}; \theta_D, \theta_G) &= D(\mathbf{y}_{\text{real}}, \mathbf{z} ; \theta_D) 
+- D(G(\mathbf{z};\theta_G); \theta_D) + \gamma \left( || \nabla_{\hat{\mathbf{y}}} D(\hat{\mathbf{y}})||_2 - 1\right)^2
+\end{align}
+where $\hat{\mathbf{y}} := \alpha\mathbf{y}_{\text{real}} + (1-\alpha) G(\mathbf{z};\theta_G)$, with $\alpha$ sampled from the uniform distribution over $[0,1]$. Here $\alpha$ is different for every training step, and the form of $\hat{\mathbf{y}}$ is motivated in~\cite{gulrajani_improved_2017} by the fact that the optimal discriminator achieves gradient 0 along a line connecting real samples with generated samples. 
+
+In the original proposal for Wasserstein GANs, this loss function is motivated as producing a discriminator that approximately measures the Wasserstein (or `earth-mover') distance between the real and generated distributions. However, in~\cite{stanczuk_wasserstein_2021} they argue that training a GAN using these loss functions does not amount to minimising the Wasserstein distance, and that in fact it is likely that this method works because the gradient penalty term acts as a regularizer for the discriminator. In addition, a comparison of GANs, removing variation due to factors such as architecture, data type and compute power, has demonstrated that it is incredibly difficult to assess which type of GAN is best, and that there is no type of GAN that necessarily outperforms the others on all tasks~\citep{lucic_are_2018}. Either way, it is a well used method that is regarded as amongst the most stable methods for training a GAN~\citep{creswell_generative_2018}, and is the method used successfully in the UK precipitation postprocessing work of~\cite{harris_generative_2022}.
+
+\ifSubfilesClassLoaded{%
+    \bibliographystyle{alpha}
+    \bibliography{references_z}
+
+}{}
+
+
+\end{document}

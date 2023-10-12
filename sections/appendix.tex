@@ -1,0 +1,69 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../images/}}}
+
+
+\begin{document}
+
+\section{Forecast variables used}\label{app:fcst_vars}
+The IFS variables used to train the model are shown in Table~\ref{tab:vars}, definitions taken from~\citep{ecmwf_parameter_2023}.
+
+The preprocessing methods mentioned in the table are as follows, using the year 2017 as the reference period:
+\begin{itemize}
+    \item Minmax: calculate the minimum $d_{\text{min}}$ and maximum $d_{\text{max}}$ over the reference period, and then transform each value $v$ according to $(v - d_{\text{min}}) / (d_{\text{max}} - d_{\text{min}})$.
+    \item Max: calculate the and maximum $d_{\text{max}}$ over the reference period, and then transform each value $v$ according to $v  / d_{\text{max}}$.
+    \item Log: Transform each value $v$ according to $\log_{10}(1+v)$.
+\end{itemize}
+\begin{table}[ht!]
+\centering
+\begin{tabular}{c | c | c } 
+ \hline
+ Variable name & Symbol & Pre-processing applied \\ [0.5ex] 
+ \hline\hline
+ 2 metre temperature &2t & Minmax  \\
+ Convective available potential energy &cape & Log \\
+ Convective inhibition &cin & Max \\
+Convective precipitation &cp & Log \\
+Surface pressure & sp & Minmax  \\
+Total column cloud liquid water &tclw & Max \\
+Total column vertically-integrated water vapour&tcwv & Log \\
+Top of atmosphere incident solar radiation&tisr & Max \\
+Total precipitation &tp & Log \\
+Relative humidity at 200hPa  &r200 & Max \\
+Relative humidity at 700hPa  &r700 & Max \\
+Relative humidity at 950hPa  &r950 & Max \\
+Temperature at 200hPa &t200 & Minmax \\
+Temperature at 700hPa  &t700 & Minmax \\
+Eastward component of wind at 200hPa &u200 & Max \\
+Eastward component of wind at 700hPa &u700 & Max \\
+Northward component of wind at 200hPa&v200 & Max \\
+Northward component of wind at 700hPa &v700 & Max \\
+Vertical velocity at 200hPa &w200 & Max \\
+Vertical velocity at 500hPa &w500 & Max \\
+Vertical velocity at 700hPa &w700 & Max \\
+ \hline
+\end{tabular}
+
+\caption{IFS variables used to train the model, as well as the normalisation applied to each variable. See text for description of the different preprocessing types.}
+\label{tab:vars}
+\end{table}
+
+% \section{Rainfall by month}
+
+% In Fig.~\ref{fig:monthly_rain} we plot the IMERG monthly rainfall from 2001-2020.
+
+% \begin{figure}[b]
+%      \centering
+%      \includegraphics[width=0.8\textwidth]{month_averages.pdf}
+     
+%      \caption{Average monthly rainfall over the period 2001-2020.}
+%      \label{fig:monthly_rain}
+% \end{figure}
+
+\ifSubfilesClassLoaded{%
+    \bibliographystyle{alpha}
+    \bibliography{references_z}
+
+}{}
+
+
+\end{document}

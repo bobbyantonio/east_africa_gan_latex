@@ -1,0 +1,66 @@
+\documentclass[../main.tex]{subfiles}
+\graphicspath{{\subfix{../images/}}}
+
+\begin{document}
+
+\section{Statistical postprocessing Overview}
+In this section we will summarise methods commonly used to reduce errors in forecasts forecasts towards a particular set of observations, 
+
+where we use the term `bias correction' to cover any method of correcting a forecast, from simple methods like subtracting the mean bias to complex methods like neural networks.
+
+Statistical postprocessing techniques cover a spectrum from simple methods such as subtracting the mean bias, to complex statistical and machine learning approaches. We will briefly summarise key methods here to provide context to our approach. Since the forecast data we use as input is not from an ensemble, we will ignore techniques for statistical postprocessing of ensembles.
+
+Methods for statistical postprocessing can broadly be split into two categories; those that assume a distribution of the variable of interest (`parametric' methods), and methods where no distribution is assumed (`nonparametric' methods). We will summarise some of the methods here but a more comprehensive overview can be found in~\citep{vannitsem_statistical_2021}.
+
+Parametric methods include using models such as linear regression~\citep{gneiting_calibrated_2005} or neural networks~\citep{rasp_neural_2018} to predict the parameters of the output distribution. For example, we may build a model that, for a given set of inputs, will predict the mean and variance of a Normal distribution that describes the temperature at a particular location. Parametric methods are appealing in that the output distribution is known. However, it is not always easy to find a parametric distribution that models the data well, particularly where there may be mixtures of behaviours contributing to the overall distribution~\citep{cavanaugh_probability_2015}, and when the data has multiple spatially correlated variables (such as data observed on a spatial grid).
+
+
+Thus in many cases, is is preferable to use a nonparametric method instead. Nonparametric methods include quantile mapping (see discussion in Sec.~\ref{subsec:qm}), copulas~\citep{li_development_2020} and neural networks~\citep{gronquist_deep_2021, han_deep_2021, horat_deep_2023} to modify a forecast value. Nonparametric methods can also be applied to producing an output distribution, for example estimating the output quantiles at particular points using linear regression~\citep{bremnes_probabilistic_2004} or random forests~\citep{meinshausen_quantile_2006}. 
+
+In this work we are concerned with producing short term precipitation forecasts that will be useful in applications such as flood modelling, and which achieve the highest resolution possible. For this reason we are particularly interested in statistical postprocessing using a model that can produce a spatially coherent ensemble of predictions, and that can produce an ensemble from a single deterministic forecast, since these tend to be higher resolution than ensemble forecasts. Therefore methods that are similar to those discussed above are not appropriate, as they either do not make predictions with realistic spatial structure, or only produce a single prediction. This motivates the use of machine learning methods for statistical postprocessing, which we discuss in the next section.
+
+\section{Statistical Postprocessing using Artificial Neural Networks}
+
+One of the most widely used machine learning models that can learn to sample spatially coherent images from a target distribution is a Generative Adversarial Network or GAN (more discussion on GANs can be found in Sec.~\ref{subsec:gans}). Several works have demonstrated the effectiveness of GANs in nowcasting~\citep{ravuri_skilful_2021}, downscaling low resolution observations~\citep{leinonen_stochastic_2020}, downscaling forecast variables~\citep{harris_generative_2022, price_increasing_2022}, estimating precipitation from raw satellite data~\citep{hayatbini_conditional_2019}, and postprocessing~\citep{duncan_generative_2022, jeong_correcting_2023, brecht_computing_2023, hess_physically_2022, yang_improving_2023}. Based on these demonstrations it is the approach we take in this work. 
+
+A potentially more straightforward way to produce a generator is to train a model such as a neural network that takes noise as input and is trained with a loss function that measures the dissimilarity between the generated and target distributions. One example is to use Maximum Mean Discrepancy (MMD), which is based on the concept of comparing moments of the target and generated samples~\citep{li_generative_2015, dziugaite_training_2015} but usually framed in terms of kernel functions that effectively perform the comparison using an infinite set of basis functions~\citep{murphy_probabilistic_2022}. This approach has been investigated in relatively few works in the weather forecasting domain using the energy score (e.g.~\citep{pacchiardi_probabilistic_2021}) which is an MMD approach with a particular choice of kernel and corresponds to a proper scoring rule~\citep{gneiting_strictly_2007}. Whilst this approach has desirable properties relative to GANs, such as ease of training and well-calibrated distributions, it isn't clear how coherent the resultant spatial distribution would be using this method. Another promising approach is to use a loss function that evaluates the mean square error in power spectral density between the generated and real samples~\citep{singh_numerical_2019}. Other deep learning approaches that have recently been successfully applied to generating realistic forecasts are diffusion models~\citep{li_seeds_2023, addison_machine_2022, leinonen_latent_2023} and transformer models~\citep{ben-bouallegue_improving_2023}.
+
+
+
+% In ~\citep{graubner_calibration_2022} they perturb initial conditions and use estimates of model parameter uncertainty to calibrate a large deterministic weather model; in principle this could be applied to the deterministic models too, although it seems better to try and directly simulate the probability density rather than assuming that this method will correctly replicate the distribution.
+
+
+
+
+% Using Copulas in~\citep{li_development_2020} over Australia, showing that it outperforms quantile mapping (looks like the quantile mapping is an 11-day sliding window with `leave one-year out cross validation')
+% \citep{amemiya_application_2023} use recurrent NNs to bias-correct the Lorenz-96 model.
+
+% \citep{sweeney_reducing_2013} compare many different methods over Ireland, including NNs, to bias correct wind speeds.
+% Methods using U-Nets etc ~\citep{han_deep_2021, horat_deep_2023}; useful but do not produce a full ensemble.
+
+
+
+
+
+
+
+% Summary of the niche we fill here:
+% \begin{itemize}
+%     \item Post-processing precipitation, which is typically harder to forecast than temp
+%     \item Using a generative model to produce an ensemble
+%     \item not point-by-point, but attempting to produce realistic spatial patterns.
+%     \item applying it to a specific region for which these post-processing methods do not seem to have been tested on.
+% \end{itemize}
+
+
+% Met Office IMPROVER?
+
+
+% General problem; how can we get bias correction methods to work for unseen scenarios? This would be the dream of a machine learning model that is able to learn about the dynamics. However, work like ~\citep{hess_physically_2022} suggests this isn't guaranteed.
+
+\ifSubfilesClassLoaded{%
+    \bibliographystyle{alpha}
+    \bibliography{references_z}
+
+}{}
+\end{document}
