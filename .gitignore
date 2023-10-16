@@ -16,6 +16,7 @@
 *.jpeg
 *.jpg
 *.eps
+*.DS_Store
 
 ## Intermediate documents:
 *.dvi
