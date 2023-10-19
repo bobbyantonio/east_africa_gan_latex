@@ -22,24 +22,25 @@
 
 \author[1]{Bobby Antonio}
 \author[1]{Andrew McRae}
-\author[3]{Dave MacLeod}
+\author[2]{Dave MacLeod}
 \author[1]{Fenwick Cooper}
-\author[4]{John Marsham}
-\author[5]{Laurence Aitchison}
-\author[2]{Tim Palmer}
-\author[2]{Peter Watson}
+\author[3]{John Marsham}
+\author[4]{Laurence Aitchison}
+\author[1]{Tim Palmer}
+\author[5]{Peter Watson}
 
 
 \affil[1]{Department of Physics, University of Oxford, Oxford, UK}
+\affil[2]{School of Earth and Environment Sciences, University of Cardiff, Cardiff, UK}
+\affil[3]{School of Earth and Environment, University of Leeds, Leeds,  UK}
+\affil[4]{Machine Learning and Computational Neuroscience Unit, University of Bristol, Bristol, UK}
+\affil[5]{School of Geographical Sciences, University of Bristol, Bristol, UK}
 
-\affil[2]{School of Geographical Sciences, University of Bristol, Bristol, UK}
 
 
-\affil[3]{School of Earth and Environment Sciences, University of Cardiff, Cardiff, UK}
 
-\affil[4]{School of Earth and Environment, University of Leeds, Leeds,  UK}
 
-\affil[5]{Machine Learning and Computational Neuroscience Unit, University of Bristol, Bristol, UK}
+
 
 
 \begin{document}
@@ -102,9 +103,19 @@ Whilst in some cases there is uncertainty as to the reliability of the satellite
 
 \subsection{Related work}
 
-SUMMARISE ML FOR POSTPROCESSING.
+Statistical postprocessing techniques cover a wide spectrum, from simple methods such as subtracting the mean bias, to complex statistical and machine learning approaches. We will briefly summarise relevant approaches to statistical postprocessing to provide context to our approach, but a more comprehensive overview can be found in~\cite{vannitsem_statistical_2021}. 
 
-Several works have demonstrated the effectiveness of GANs in nowcasting~\citep{ravuri_skilful_2021}, downscaling low resolution observations~\citep{leinonen_stochastic_2020}, downscaling forecast variables~\citep{harris_generative_2022, price_increasing_2022}, estimating precipitation from raw satellite data~\citep{hayatbini_conditional_2019}, and postprocessing precipitation forecasts~\citep{duncan_generative_2022, jeong_correcting_2023,  hess_physically_2022, yang_improving_2023}
+In this work we are concerned with producing short term precipitation forecasts that will be useful in applications such as flood modelling, and which achieve the highest resolution possible. For this reason we are particularly interested in statistical postprocessing techniques that can produce spatially realistic predictions, and that can produce an ensemble from a single deterministic forecast (since deterministic forecasts tend to be higher resolution than ensemble forecasts). Thus we ignore techniques for statistical postprocessing of ensembles.
+
+Some previous works have used models such as linear regression~\citep{gneiting_calibrated_2005} or neural networks~\citep{rasp_neural_2018}to predict the parameters of a known output probability distribution. However, these are valid for only a small number of points (e.g.~weather stations), and it is in general very hard to create a parameterised output distribution for gridded datasets over a large area. Other works have used deterministic machine learning models to adjust forecasts of variables such as temperature and precipitation~\citep{gronquist_deep_2021, han_deep_2021, horat_deep_2023}, however these do not capture the probability distribution of the target variables. 
+
+Therefore, we focus on using a non-parametric approach, that doesn't explicitly model the output distribution, but instead approximates it via a generative machine learning model that can produce an ensemble of forecasts. One of the most widely used machine learning models that can learn to sample realistic images from a target distribution is a Generative Adversarial Network or GAN~\citep{goodfellow_generative_2014}. 
+
+Several works have demonstrated the effectiveness of GANs in a range of tasks; in \cite{leinonen_stochastic_2020} a GAN was trained to downscale low resolution observations~\citep{leinonen_stochastic_2020}.~\cite{harris_generative_2022} and~\cite{price_increasing_2022} then applied the same approach to the problem of downscaling coarse resolution forecasts towards radar observations. Our model code is forked from that of~\cite{harris_generative_2022}, which itself is forked from~\cite{leinonen_stochastic_2020}. There are several works that have use GANs to postprocess precipitation forecasts: \cite{duncan_generative_2022} used a GAN to post-process the output of a machine learning model (FourCastNet) to align it more closely with reanalysis data. For many applications, where paired training data is hard to find, models such as the CycleGAN have been developed, which learn the forward and backward transformation simultaneously. This is the approach used in~\cite{hess_physically_2022} to perform bias correction on Earth System Model output.~\cite{jeong_correcting_2023} use a related model, the DiscoGAN to perform corrections of precipitation forecasts over South Korea. 
+
+Another method to train a generative machine learning model is to use a loss function that measures the dissimilarity between the generated and target distributions. One example is to use Maximum Mean Discrepancy (MMD), which is based on the concept of comparing moments of the target and generated samples~\citep{li_generative_2015, dziugaite_training_2015}. This approach has been investigated in relatively few works in the weather forecasting domain using the energy score (e.g.~\cite{pacchiardi_probabilistic_2021}) which is an MMD approach with a particular choice of kernel and corresponds to a proper scoring rule~\citep{gneiting_strictly_2007}. Another promising approach along similar lines would be to use a loss function that evaluates the mean square error in power spectral density between the generated and real samples~\citep{singh_numerical_2019}. Whilst these approaches have desirable properties relative to GANs, such as ease of training and well-calibrated distributions, it isn't clear how coherent the resultant spatial distribution would be using this method. 
+
+Aside from GANs, other deep learning approaches that have recently been successfully applied to downscaling forecasts are diffusion models~\citep{li_seeds_2023, addison_machine_2022, leinonen_latent_2023} and transformer models~\citep{ben-bouallegue_improving_2023}. 
 
 
 \section{Methods}
@@ -120,14 +131,18 @@ Whilst the IMERG data does not perfectly represent the true rainfall, it perform
 
 The forecast used is the the ECMWF IFS HRES deterministic hourly forecast~\citep{ecmwf_operational_2023} (interpolated from $9\text{km} \times 9\text{km}$ resolution to $0.1^{\circ} \times 0.1^{\circ}$) as this tends to perform amongst the best compared to similar models~\citep{haiden_intercomparison_2012}. The model takes IFS forecast variables plus the orography and land-sea mask as inputs, and uses IMERG as the ground truth. Note that the land-sea mask labels lakes as well as sea, which is important given the presence of Lake Victoria and other nearby lakes. Since the IFS forecasts rainfall values are cumulative, we convert cumulative values to mm/hr values by finding the difference in cumulative values over the hour. So e.g.~for a forecast time of 1pm, the precipitation in mm/hr is the difference between the cumulative rainfall values at 1pm and 2pm. Instantaneous variables (like wind speed) are taken as the value on the hour, so e.g.~for a forecast time of 1pm, the wind speed is the value at 1pm. 
 
-
+The dataset was split up as follows:
+\begin{itemize}
+    \item Training set: March 2016 – February 2018 and July 2018 – Sept 2020 (excluding validation months)
+    \item Validation set: Jun 2018, Oct 2018, Jan 2019, March 2019
+    \item Test sets: October 2020 - September 2021, March - May 2018
+\end{itemize}
+The choice of the validation set is such that a month from each of the different seasons is used to gauge which model performs best over a range of typical scenarios. Note also that we leave out the 2018 long rains (March-May) to test against since this was a period of particularly heavy rainfall~\citep{kilavi_extreme_2018}, and so will shed light on how well the model extrapolates to extreme rainfall. 
 
 \subsection{Machine Learning Model}
 
 
-In this work we are concerned with producing short term precipitation forecasts that will be useful in applications such as flood modelling, and which achieve the highest resolution possible. For this reason we are particularly interested in statistical postprocessing techniques that can produce spatially realistic predictions, and that account for stochasticity in the rainfall by producing an ensemble from a single deterministic forecast (since deterministic forecasts tend to be higher resolution than ensemble forecasts).
 
-For this reason, we focus on using a non-parametric approach, that doesn't explicitly model the output distribution, but instead approximates it via a machine learning model. One of the most widely used machine learning models that can learn to sample realistic images from a target distribution is a Generative Adversarial Network or GAN~\citep{}. Several works have demonstrated the effectiveness of GANs in nowcasting~\citep{ravuri_skilful_2021}, downscaling low resolution observations~\citep{leinonen_stochastic_2020}, downscaling forecast variables~\citep{harris_generative_2022, price_increasing_2022}, estimating precipitation from raw satellite data~\citep{hayatbini_conditional_2019}, and postprocessing precipitation forecasts~\citep{duncan_generative_2022, jeong_correcting_2023,  hess_physically_2022, yang_improving_2023}. Based on these demonstrations it is the approach we take in this work. 
 
 Our model architecture uses the same architecture and code as in~\cite{harris_generative_2022}, itself based on~\cite{leinonen_stochastic_2020} in which a conditional Wasserstein GAN is trained to predict realistic rainfall patterns conditioned on several meteorological inputs together with constant inputs such as orography. Both the generator and discriminator are deep neural networks primarily made up of residual blocks that each contain two convolution layers, using square convolutional kernels of width 3 pixels. The generator is composed of 7 residual blocks (each with $f_g$ filters), with a final softplus activation function, giving a total of $2 \times 7 \times f_g$ hidden layers each of size $200 \times 200$. The discriminator is made up of 3 residual blocks (each with $f_d$ filters), and two dense layers, giving a total of $2 \times 3 \times f_d$ hidden layers each of size $200 \times 200$. 
 Excluding the output layers, PReLU activation functions were used, were we set the $\alpha$ parameter for the PReLU to 0.2 following~\cite{harris_generative_2022}. The number of noise channels was set to 4, and the learning rates for the generator and discriminator were set equal to $1\times 10^{-5}$, with the discriminator being trained for 5 steps for every 1 step of generator training. In line with the settings in~\cite{gulrajani_improved_2017} we set the gradient penalty parameter $\gamma$ to 10. The batch size was set to 2 based on hardware memory constraints.
@@ -145,33 +160,9 @@ Excluding the output layers, PReLU activation functions were used, were we set t
 
 During validation of the models, we observed that using log normalisation of the outputs, as done by Harris et.~al., produced a distribution of rainfall that tended to exponentially deviate from the observations at the extreme rainfall values, and so produced very unrealistic values of rainfall. To remedy this we experimented with removing the log normalisation for the output rainfall values, finding that this removed the unrealistic values, instead slightly under-predicting the rainfall. We chose to accept this trade-off since the non-log normalised version could be corrected by quantile mapping, and it is undesirable to have excessively unrealistic rainfall values. This also removed the need to apply a cutoff to the predicted rainfall value, as done in Harris et. al. This also required modifying the content loss parameter $\lambda$, with $\lambda=100$ appearing to produce the best results according to a joint assessment of CRPS, RALSD, and quantile-quantile plots.
 
-The dataset was split up as follows:
-\begin{itemize}
-    \item Training set: March 2016 – February 2018 and July 2018 – Sept 2020 (excluding validation months)
-    \item Validation set: Jun 2018, Oct 2018, Jan 2019, March 2019
-    \item Test sets: October 2020 - September 2021, March - May 2018
-\end{itemize}
-The choice of the validation set is such that a month from each of the different seasons is used to gauge which model performs best over a range of typical scenarios. Note also that we leave out the 2018 long rains (March-May) to test against since this was a period of particularly heavy rainfall~\citep{kilavi_extreme_2018}, and so will shed light on how well the model extrapolates to extreme rainfall. 
 
 
 
-     
-\begin{figure}[h]
-    \begin{subfigure}[c]{0.48\textwidth}
-    \centering
-        \includegraphics[width=\textwidth]{images/generator_2.drawio.pdf}
-        \caption{}
-        \centering
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[c]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{images/discriminator.drawio.pdf}
-        \caption{}
-        \centering
-    \end{subfigure}
-     \caption{The model architecture used in this work: a) the generator model and b) the discriminator model. For the generator, all inputs are first concatenated before being passed through 4 residual blocks. The output of this is concatenated with the constants again before being passed through another 3 residual blocks and a final output activation layer. The discriminator concatenates IFS inputs with constants, and constants with observations, which are then separately passed through residual block before being concatenated again, and passed through another 2 residual blocks. The outputs are then pooled and reshaped into a single number using two dense layers.}
-    \label{fig:resnet}
-\end{figure}    
 
 
 In~\cite{harris_generative_2022} the training samples are chosen based on the total rainfall of each sample, such that wetter days are sampled more during training than drier days. However, the threshold used by Harris et. al.~for postprocessing UK rainfall was not appropriate for the drier region we are considering. We experimented with splitting data into rainfall by quartiles (according to mean rainfall over the image) and sampling the higher quartiles more often, but from visual inspection of the generated images this performed worse than just sampling uniformly over the training data, perhaps because we did not modify the loss function to compensate for the over-sampling.
@@ -183,7 +174,7 @@ Since our data volumes are relatively small compared to the amounts typically de
 
 
 
-Similarly to the results in~\cite{harris_generative_2022}, we observed that the model quality during training (as measured by CRPS, RAPSD and visual inspection) was very variable, such that a validation set is required to pick the best model based on looking at summary statistics of CRPS, radially-averaged power spectral density, and ensemble mean-square error, plus visually assessing the realism of the samples. For this reason we kept out 4 months of validation data to be used to choose the best performing model (see Sec.~\ref{sec:data})
+Similarly to the results in~\cite{harris_generative_2022}, we observed that the model quality during training (as measured by CRPS, RAPSD and visual inspection) was very variable, such that a validation set is required to pick the best model based on looking at summary statistics of CRPS, radially-averaged power spectral density, and ensemble mean-square error, plus visually assessing the realism of the samples. For this reason we kept out 4 months of validation data to be used to choose the best performing model (see Sec.~\ref{sec:data}).
 
 \subsection{Quantile mapping}
 \label{subsec:qm}
@@ -302,33 +293,7 @@ To evaluate the optimal grouping in the spatial domain, the mean square error of
      \label{fig:rapsd}
 \end{figure}
 
-\begin{figure}[!ht]
-    \centering
-    \begin{subfigure}{0.8\textwidth}
-    \centering
-     \includegraphics[width=\textwidth]{images/bias_final-nologs217600.pdf}
-     \caption{}
-     \end{subfigure}
-     \begin{subfigure}{0.8\textwidth}
-    \centering
-     \includegraphics[width=\textwidth]{images/bias_std_final-nologs217600.pdf}
-     \caption{}
-     \end{subfigure}
-    
-     \caption{a) Average mean bias of the cGAN and IFS models b) Bias in the standard deviation for the cGAN-qm and IFS-qm models }
-     \label{fig:bias}
-\end{figure}
 
-\begin{figure}
-\centering
-     \begin{subfigure}{\textwidth}
-    \centering
-     \includegraphics[width=\textwidth]{images/scatter_mean_final-nologs_217600.pdf}
-     \caption{}
-     \end{subfigure}
-     \caption{Scatter plots of the domain averaged rainfall, for the IMERG observations against the cGAN-qm model (left) and IFS-qm model (right). In both plots the dashed black line represents the line that a perfect forecast would lie along. The Pearson correlation coefficient is 0.74 for the cGAN-qm model and 0.61 for the IFS data.}
-     \label{fig:bias}
-\end{figure}
 
 
 
@@ -373,6 +338,35 @@ To evaluate the optimal grouping in the spatial domain, the mean square error of
      \label{fig:peak_hour}
 \end{figure}
 
+
+\begin{figure}[!ht]
+    \centering
+    \begin{subfigure}{0.8\textwidth}
+    \centering
+     \includegraphics[width=\textwidth]{images/bias_final-nologs217600.pdf}
+     \caption{}
+     \end{subfigure}
+     \begin{subfigure}{0.8\textwidth}
+    \centering
+     \includegraphics[width=\textwidth]{images/bias_std_final-nologs217600.pdf}
+     \caption{}
+     \end{subfigure}
+    
+     \caption{a) Average mean bias of the cGAN and IFS models b) Bias in the standard deviation for the cGAN-qm and IFS-qm models }
+     \label{fig:bias}
+\end{figure}
+
+\begin{figure}
+\centering
+     \begin{subfigure}{\textwidth}
+    \centering
+     \includegraphics[width=\textwidth]{images/scatter_mean_final-nologs_217600.pdf}
+     \caption{}
+     \end{subfigure}
+     \caption{Scatter plots of the domain averaged rainfall, for the IMERG observations against the cGAN-qm model (left) and IFS-qm model (right). In both plots the dashed black line represents the line that a perfect forecast would lie along. The Pearson correlation coefficient is 0.74 for the cGAN-qm model and 0.61 for the IFS data.}
+     \label{fig:bias}
+\end{figure}
+
  We first asses how well the forecasts capture the distribution of rainfall, by looking at a quantile-quantile plot and a histogram of rainfall distribution for 4000 samples taken from the test year, shown in Fig.~\ref{fig:distribution} (a) and (b) respectively. The raw model outputs are shown together with quantile-mapped outputs, indicated by a `-qm' suffix. From these we can see that the raw cGAN output is an improvement on the raw IFS output up to extremely high levels of rainfall (around 50mm/hr) beyond which point the IFS is closer to the distribution. Note that we wouldn't necessarily expect the GAN to align closely with the observed frequency distribution, since it is not explicitly trained to do so.
 
 After both forecasts have been quantile mapped, they are much closer to the ideal line, with deviations at high quantiles which we attribute mainly to sampling variability. The scale of sampling variability was quantified by performing 1000 iterations of bootstrapping (see Sec.~\ref{sec:sample_var}) to estimate the standard deviation of the quantiles. These are shown in Fig.~\ref{fig:distribution}, where each error bar shows 2 standard deviations. It is likely that this is an underestimate of sampling variability, since there are correlations between samples that are unaccounted for, in which case it appears that the deviations of the quantiles from the diagonal is mainly due to sampling variability as expected. 
@@ -383,6 +377,9 @@ In order to also get a sense of how extreme these quantile values are, we plot t
 Since these quantile mapped versions appear to much better forecasts, for the remaining diagnostics in this work we will focus on these quantile-mapped forecasts. Unless indicated otherwise, the following metrics are evaluated on a 4000 unique hours from the test period sampled uniformly over all dates from the test year.
 
 We plot examples of the samples generated by the cGAN in Fig.~\ref{fig:examples}, for an ensemble size of 20. The generated samples appear to be fairly realistic, and the ensemble mean seems to correlate well with the locations and intensity of the observed rainfall. In the bottom row example (8am on 8th May 2021) we can see the cGAN removing some of the excess low rainfall seen over the land and see for the IFS-qm model. The top and bottom row examples also show both models not capturing the shape and maximum intensity of the high rainfall event occurring over the sea. To get a quantitative picture of how spatially realistic these rainfall patterns are, we plot the Radially Averaged Power Spectral Density (RAPSD) in Fig.~\ref{fig:rapsd}. From this we can that both quantile-mapped forecasts achieve similar results, with the cGAN slightly closer overall to the ideal line, and both forecasts showing opposite bias at the lowest wavenumbers, possibly due to sampling variability.
+
+A major source of error that the quantile mapping approach is unable to adjust for is any bias in the diurnal cycle. Summary statistics of the rainfall as a function of hour are plotted in Fig.~\ref{fig:diurnal}, from which it is clear that the cGAN is making significant improvements to the diurnal cycle. The IFS forecast has a clear average bias around midday that is also prominent for high quantiles, whilst the cGAN is more aligned with observations. We can gain insight into what regions are particularly driving this improvement from the plots of average peak rainfall hour in Fig.~\ref{fig:peak_hour}. The data is smoothed along the time axis using a centred moving average of length 3, in order to remove noise and make it easier to see any patterns in the data. The peak rainfall hour for the cGAN is fairly spatially noisy, but improvements can mainly be seen to occur on land. Note that the cGAN is not being given the hour as an input, but is instead using another variable as a proxy (e.g.~total incident solar radiation), which may explain the noisiness of the cGAN results. Looking at Lake Victoria, we can see that the cGAN correctly captures more of the nighttime maxima seen along the East coast of the lake and the morning maxima seen in the central and Western parts (see e.g.~\cite{woodhams_identifying_2019}), although it also tends to have a strong early bias in the land around the Western part of the lake.
+
 
 The plot of average bias in Fig.~\ref{fig:bias} (a) shows that on average the cGAN-qm under-predicts rainfall whilst the quantile-mapped IFS over-predicts. The cGAN also reduces the most prominent average biases of the IFS occurring over the Ethiopian highlands, Lake Victoria and the Western side of the East African rift, near Rwanda and Burundi. The effects on the bias in the standard deviation in Fig.~\ref{fig:bias} (b) are less obvious, there is some reduction in the sharpness of the peaks around the Ethiopian highlands, coastal regions and over the ocean, but there are also areas of increased negative bias in other parts of the ocean and in the western part of the domain over the Democratic Republic of Congo. The scatter plot in Fig.~\ref{fig:bias} shows how each model captures the domain-averaged rainfall; the cGAN-qm model is more tightly clustered around the ideal diagonal line, with the IFS-qm more spread out and tending to over-predict. This is reflected in the Pearson correlation coefficients; 0.74 for the cGAN-qm and 0.61 for the IFS-qm.
 
@@ -416,9 +413,7 @@ The plot of average bias in Fig.~\ref{fig:bias} (a) shows that on average the cG
      \label{fig:fss}
 \end{figure}
 
-One source of error that the quantile mapping approach we use here is unable to adjust for is any bias in the diurnal cycle. Summary statistics of the rainfall as a function of hour are plotted in Fig.~\ref{fig:diurnal}, from which it is clear that the cGAN is making significant improvements to the diurnal cycle. The IFS forecast has a clear average bias around midday that is also prominent for high quantiles, whilst the cGAN is more aligned with observations.
 
-We can gain insight into what regions are particularly driving this improvement from the plots of average peak rainfall hour in Fig.~\ref{fig:peak_hour}. The data is smoothed along the time axis using a centred moving average of length 3, in order to remove noise and make it easier to see any patterns in the data. The peak rainfall hour for the cGAN is fairly spatially noisy, but improvements can mainly be seen to occur on land. Note that the cGAN is not being given the hour as an input, but is instead using another variable as a proxy (e.g.~total incident solar radiation), which may explain the noisiness of the cGAN results. Looking at Lake Victoria, we can see that the cGAN correctly captures more of the nighttime maxima seen along the East coast of the lake and the morning maxima seen in the central and Western parts (see e.g.~\cite{woodhams_identifying_2019}), although it also tends to have a strong early bias in the land around the Western part of the lake.
 
 
 \subsection{Event-based assessment}
@@ -488,17 +483,16 @@ We also asses the Equitable Threat Score (ETS)~\citep{schaefer_critical_1990, wi
 
 We now focus on how well the cGAN ensemble is calibrated. Note that, since one of our aims is to be able to convert a deterministic forecast into an ensemble forecast, we do not have an ensemble forecast to compare with.
 
-These results are assessed on 500 samples drawn uniformly over all days from the test year, each with 100 ensemble members. In Fig.~\ref{fig:ens_calib} (c) we show the spread error, where the spread is binned into 100 bins. From this we can see that the cGAN ensemble is slightly under-dispersive (i.e.~over-confident) for situations where there is low observed RMSE, but very over-dispersive (i.e.~under-confident) for situations where there is high RMSE. Since we would expect RMSE to roughly scale with the rainfall intensity, this suggests that the cGAN-qm model is over-confident at low rainfall values but under-confident at high rainfall values. Whilst the ensemble isn't calibrated perfectly, it is also reassuring to see that the cGAN has not fallen into the common failure mode of producing homogeneous images (which would produce extremely under-dispersive results).
+These results are assessed on 500 samples drawn uniformly over all days from the test year, each with 100 ensemble members. In Fig.~\ref{fig:ens_calib} (c) we show the spread error, where the spread is binned into 100 bins. From this we can see that the cGAN ensemble has a mixture of under-dispersive (i.e.~over-confident) and over-dispersive (i.e.~under-confident) behaviour. Whilst the ensemble isn't calibrated perfectly, it is also reassuring to see that the cGAN has not fallen into the common failure mode of producing homogeneous images (which would produce extremely under-dispersive results).
 
 The pixel-wise rank histogram in Fig.~\ref{fig:ens_calib} (b) also demonstrates that the ensemble deviates from the perfectly calibrated line, and appears to be made up of a mixture of behaviours. In general it is hard to uniquely attribute forecast behaviour from a rank histogram~\citep{hamill_interpretation_2001}; a U-shaped distribution can be indicative of under-dispersion of the ensemble, but can also be a mixture of over- and under-forecasting biases. 
 
 In order to shed light on this, we also calculate rank histograms conditioned on the value in the cGAN-qm ensemble mean. In Fig.~\ref{fig:ens_calib} (c) and (d) we show rank histograms conditioned on the cGAN ensemble mean being $>0.1\text{mm/hr}$ and $\leq 0.1\text{mm/hr}$, respectively. In Fig.~\ref{fig:ens_calib} (c) we can see a clear U-shape for the high values, indicating under-dispersion, and a tendency to predict higher than the observations. From Fig.~\ref{fig:ens_calib} (d) we can see that the dominant behaviour at low rainfall intensity is over-prediction and over-dispersion. 
 
-There is also an apparent contradiction between the spread-error plot result and the rank histogram: The spread-error plot appears to show decreasing dispersion with high rainfall values, while the rank histogram appears to show under-dispersion at high rainfall values. An explanation for this could be down to the fact that the rank histogram measures ordering and is insensitive to the particular error values, unlike the spread-error. Then potentially the spread-error is being skewed by a small number of forecasts that produce very high predictions, which doesn't show up on the rank histograms.
+TODO: explain spread erro plot in light of rank histogram?
 
-Another explanation for this contradiction is that, rather than being a U-shape indicating under-dispersion, the rank histogram in Fig.~\ref{fig:ens_calib} (c) is a mixture of systematic under- and over-forecasting, such that on average the cGAN over-forecasts, which also leads to large spreads.
+% There is also an apparent contradiction between the spread-error plot result and the rank histogram: The spread-error plot appears to show over-dispersion with high rainfall values, while the rank histogram appears to show under-dispersion at high rainfall values. An explanation for this could be down to the fact that the rank histogram measures ordering and is insensitive to the particular error values, unlike the spread-error. Then potentially the spread-error is being skewed by a small number of forecasts that produce very high predictions, which doesn't show up on the rank histograms.
 
-    
 % \section{Evaluation on extreme test set}
 
 % ...
@@ -525,27 +519,20 @@ To assess the ability of the model to predict events at a range of scales, the F
 
 
 
-The calibration of the cGAN ensemble was assessed via a spread-error plot and rank histograms. Both diagnostics indicate under-dispersion at high rainfall values and over-dispersion at lower rainfall values. This separation was partly identified through rank histograms conditioned on the ensemble mean being above or below a small threshold (01mm/hr).
+The calibration of the cGAN ensemble was assessed via a spread-error plot and rank histograms. Both diagnostics indicate a mixture of under-dispersion and over-dispersion. By conditioning the rank histograms on the magnitude of the ensemble mean prediction, the behaviour appears to be under-dispersion at high rainfall values and over-dispersion at lower rainfall values. .
 
-Overall, these results highlights the subtlety in identifying the improvements a cGAN can bring; whilst the cGAN can significantly improve the raw IFS forecast, a strong baseline is crucial to find the areas where the cGAN can outperform conventional postprocessing methods. Compared to the quantile mapping baseline the improvements are mainly in the diurnal cycle and the scores for rainfall events at low to medium rainfall intensities. 
-
-
-One limitation is the lack of a baseline ensemble to compare probabilistic forecasts against; towards the end of this project, the ECMWF IFS released ensemble forecast data at the same resolution, so going forward it would be ideal to compare our ensemble predictions to these. 
+Overall, these results highlights the subtlety in identifying the improvements a cGAN can bring; whilst the cGAN can significantly improve the raw IFS forecast, a strong baseline is crucial to find the areas where the cGAN can outperform conventional postprocessing methods. Compared to the quantile mapping baseline the improvements are mainly in the diurnal cycle and the scores for rainfall events at low to medium rainfall intensities. One limitation we have in this work is the lack of a baseline ensemble to compare probabilistic forecasts against; towards the end of this project, the ECMWF IFS released ensemble forecast data at the same resolution, so going forward it would be ideal to compare our ensemble predictions to these. 
  
 In general, forecast postprocessing and verification is more meaningful when done towards a particular forecast user's needs, as this allows informed decisions to be made as to how to improve the model. So in future work it would be best to target a particular use-case for these forecasts, and this would also inform the best way to train the generative model. Since the focus of this work is on short term forecasting to aid with early warnings for flooding, it would be particularly insightful to use the output of the cGAN model as input to a hydrology model, and assess any potential benefits there may be. Over Lake Victoria, one of the main hazards is high winds, and whilst rainfall can serve as a proxy for when these winds may happen, it would be interesting to see how the cGAN would perform at forecasting wind speeds as well. The performance of these models on unseen extreme rainfall was also not evaluated; however we have held back a part of the data (the 2018 long rains) for a future evaluation.
 
-We have mostly considered the entire domain as a whole, but as the domain behaviour is very heterogeneous, it could be better to train and/or evaluate the models over more smaller areas of more meaningful significance, such as river basins prone to flooding, areas managed by a particular disaster relief agency, areas grouped by climatological similarity, or areas where impacts are particularly high (e.g.~high population density areas). 
-
-Our quantile mapping baseline is also limited in that it cannot modify the diurnal cycle, and 
-
-There are many possible standard machine learning methods that would be good to try, such as spectral normalisation or batch normalisation after the convolutions as used in~\cite{ravuri_skilful_2021}, or a more nuanced scheme to weight the rainier days more heavily, which given the particularly dry climate seen here may well make significant improvements if performed properly. There are also additional terms we could use in the loss function, such as RAPSD, pooled spatial values, or Fractions Skill Score, that we may expect to help produce well-calibrated forecasts.
-
-There may also be additional variables that are not currently fed into the model that could be useful. For example, location-specific parameters such as latitude or longitude, topography, or an embedding of location as done in~\cite{rasp_neural_2018}. There is potential that these would improve the results by learning behaviours that are specific to a region and that only weakly depend on the input variables we have. Also we implicitly assume that the IFS forecast captures all of the useful information about phenomena such as the Indian Ocean Dipole, Madden-Julian oscillations and ENSO, which are known to be important factors for forecasting extreme rainfall~\citep{wainwright_extreme_2021, palmer_drivers_2023}. It would be insightful to use indexes of these drivers as additional input, and/or sea surface temperatures in relevant parts of the Indian Ocean. It would be interesting as well to include the initial state of the forecast, if available, to see whether the machine learning model is able to correct for errors in how the IFS evolves this initial state.
+We have trained and evaluated on the entire domain as a whole, but since the domain behaviour is very heterogeneous it could be better to train and/or evaluate the models over more smaller areas of more meaningful significance, such as river basins prone to flooding, areas managed by a particular disaster relief agency, areas grouped by climatological similarity, or areas where impacts are particularly high (e.g.~high population density areas). Given the significant effect of Lake Victoria on the local climate, a separate lake and sea mask may also be effective in improving forecasts in that area, and it may be better to train a separate model over that region.
 
 
-In \cite{thiery_early_2017} they demonstrate the usefulness of land storm activity from the previous afternoon in predicting morning storm activity over Lake Victoria, so this would be useful additional information to have if it is available to a forecast system. Given the significant effect of Lake Victoria on the local climate, a separate lake and sea mask may also be effective in improving forecasts in that area, and it may be better to train a separate model over that region.
+% There are many possible standard machine learning methods that would be good to try, such as spectral normalisation or batch normalisation after the convolutions as used in~\cite{ravuri_skilful_2021}, or a more nuanced scheme to weight the rainier days more heavily, which given the particularly dry climate seen here may well make significant improvements if performed properly. There are also additional terms we could use in the loss function, such as RAPSD, pooled spatial values, or Fractions Skill Score, that we may expect to help produce well-calibrated forecasts.
 
-There are also other promising machine learning models that would be interesting to compare with, to see if performance improvements can be made. Particularly promising approaches would be diffusion models~\citep{addison_machine_2022}, since they appear to perform well and are easier to train, and models trained directly on a suitable loss function such as the energy score.
+There may also be additional variables that are not currently fed into the model that could be useful. For example, location-specific parameters such as latitude or longitude, topography, or an embedding of location as done in~\cite{rasp_neural_2018}. There is potential that these would improve the results by learning behaviours that are specific to a region and that only weakly depend on the input variables we have. Also we implicitly assume that the IFS forecast captures all of the useful information about phenomena such as the Indian Ocean Dipole, Madden-Julian oscillations and ENSO, which are known to be important factors for forecasting extreme rainfall~\citep{wainwright_extreme_2021, palmer_drivers_2023}. It would be insightful to use indexes of these drivers as additional input, and/or sea surface temperatures in relevant parts of the Indian Ocean. It would be interesting as well to include the initial state of the forecast, if available, to see whether the machine learning model is able to correct for errors in how the IFS evolves this initial state, or storm activity from the previous day, which has been shown to be useful in predicting morning storm activity~\citep{thiery_early_2017}. 
+
+There are also other promising machine learning models that would be interesting to compare with, to see if performance improvements can be made. Particularly promising approaches would be diffusion models~\citep{addison_machine_2022, leinonen_latent_2023}, since they appear to perform well and are easier to train, and models trained directly on a suitable loss function such as the energy score.
 
 \bibliography{references_z}
 
