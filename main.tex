@@ -64,25 +64,37 @@ Conventional forecast products that use convection parameterization have been de
 
 In recent years, it has become computationally feasible to run `convection permitting' (CP) models at higher resolutions ($\sim4\text{km}$) for which the model can better capture convection processes without using a parameterization scheme. Several studies have investigated how well these CP models correct precipitation bias in East Africa~\citep{finney_implications_2019, cafaro_convection-permitting_2021, woodhams_what_2018, chamberlain_forecasting_2014, kendon_enhanced_2019, senior_convection-permitting_2021}; these studies have found that CP models tend to improve the overall rainfall distribution (at both high and low rainfall). They also tend to produce a more realistic rainfall frequency, as well as making the diurnal cycle more in line with observations. However, the rainfall distribution is not uniformly improved over the region~\citep{senior_convection-permitting_2021}, and many of these works demonstrate a tendency to over-predict rainfall. Some biases also still remain in diurnal cycle and intensity over the Lake Victoria region, and the models do not capture some of the nighttime peaks in areas such as South Sudan~\citep{finney_implications_2019, chamberlain_forecasting_2014}. 
 
-Whilst in some cases there is uncertainty as to the reliability of the satellite data used to assess these models, these results suggest that even with a CP model there will still remain significant biases for the diurnal cycle and rainfall intensity. It remains to be seen whether or not these biases can be overcome through further increases in resolution or model improvements, but in the meantime there is a clear place for using post-processing methods to correct the remaining biases in the models.
-
-
 
 % Existing numerical weather prediction (NWP) forecast products tend to struggle in tropical regions, particularly in capturing the intensity and diurnal cycle of precipitation, associated with the large role of convective rainfall in these regions, which is not well represented by convection parameterisation schemes used in existing global forecast models ~\citep{haiden_intercomparison_2012, vogel_skill_2018, woodhams_what_2018}. Convection-permitting models have demonstrated improved abilities at capturing the timing and intensity of rainfall~\citep{finney_implications_2019, woodhams_what_2018}, although there still appears to be a tendency for these models to over-predict rainfall in this region, and they are computationally expensive to run.
 
 % Recent investigations into model performance also advocate that postprocessing may be required to improve skill in this region~\citep{vogel_skill_2018}.
 
-At the same time machine learning models have improved dramatically over the last decade at a range of tasks, including generating realistic images~\citep{karras_style-based_2019}. This has inspired several attempts to create weather predictions from large amounts of historical data~\citep{nguyen_climax_2023, bi_pangu-weather_2022,ravuri_skilful_2021, zhang_skilful_2023,lam_graphcast_2022}. 
+At the same time machine learning models have improved dramatically over the last decade at a range of tasks, including generating realistic images~\citep{karras_style-based_2019}. This has inspired several attempts to create weather predictions from large amounts of historical data~\citep{nguyen_climax_2023, bi_pangu-weather_2022,ravuri_skilful_2021, zhang_skilful_2023,lam_graphcast_2022} and using machine learning for bias correction~\citep{rasp_neural_2018,ben-bouallegue_improving_2023}.
 
-Several works have already demonstrated how machine learning techniques can be used to augment existing forecasts, such as downscaling~\citep{harris_generative_2022, leinonen_latent_2023} and bias correction of forecasts at short~\citep{rasp_neural_2018} and medium ranges~\citep{ben-bouallegue_improving_2023}. However, only a small amount of effort has been applied to developing these techniques in tropical regions, such as regions in Africa, for which the need for improved forecasting is often greater, and which historically have not seen the same forecast skill improvements as mid-latitude areas like Europe and North America~\citep{youds_gcrf_2021}, and so we may be lacking a full view of the strengths of different models.
+One of the most widely used machine learning models that can learn to sample realistic images from a target distribution is a Generative Adversarial Network or GAN~\citep{goodfellow_generative_2014}. Several works have demonstrated the effectiveness of GANs in a range of tasks; in \cite{leinonen_stochastic_2020} a GAN was trained to downscale low resolution observations~\citep{leinonen_stochastic_2020}.~\cite{harris_generative_2022} and~\cite{price_increasing_2022} then applied the same approach to the problem of downscaling coarse resolution forecasts towards radar observations. There are several works that have use GANs to postprocess precipitation forecasts: e.g.~\cite{duncan_generative_2022} have used a GAN to post-process the output of a machine learning model, and~\cite{jeong_correcting_2023} used a cyclical GAN to perform corrections of precipitation forecasts over South Korea. In addition to these approaches, other deep learning approaches have recently been successfully applied to post-processing climate and weather models, such as diffusion models~\citep{li_seeds_2023, addison_machine_2022, leinonen_latent_2023} and transformer models~\citep{ben-bouallegue_improving_2023}, and training neural networks using the energy score~\cite{pacchiardi_probabilistic_2021}.
 
-This raises the question; can we leverage recent advances in machine learning to improve forecasts in tropical regions such as East Africa? In this work we investigate this question by training a particular machine learning model (a Generative Adversarial Network) to postprocess short range NWP rainfall forecasts in East Africa at lead times of 6-18h, to test whether this can provide an effective means of correcting existing forecasts. We use forecasts from the state-of-the-art European Centre for Medium-Range Weather Forecasts (ECMWF) Integrated Forecast System (IFS) as the NWP product. In contrast to previous work on ML-based forecasting, we consider the challenging problem of forecasting rainfall in a tropical region, and evaluate whether a GAN is able to learn the properties of rainfall in a region where convection is dominant. We also combine the ML with a conventional postprocessing technique (quantile mapping), in order to leverage the strengths of both methods. We compare against ECMWF IFS forecasts, with quantile mapping also applied - this gives a baseline that is stronger than unmodified forecasts as commonly used in previous work on ML-based forecasting, giving a stronger test of whether ML can improve upon the state-of-the-art. 
+
+However, only a small amount of effort has been applied to developing these techniques in tropical regions, such as regions in Africa, for which the need for improved forecasting is often greater, and which historically have not seen the same forecast skill improvements as mid-latitude areas like Europe and North America~\citep{youds_gcrf_2021}, and so we may be lacking a full view of the strengths of different models.
+
+This raises the question; can we leverage recent advances in machine learning to improve forecasts in tropical regions such as East Africa? In this work we investigate this question by training a Generative Adversarial Network to postprocess short range NWP rainfall forecasts in East Africa at lead times of 6-18h, to test whether this can provide an effective means of correcting existing forecasts. We use forecasts from the state-of-the-art European Centre for Medium-Range Weather Forecasts (ECMWF) Integrated Forecast System (IFS) as the NWP product. In contrast to previous work on ML-based forecasting, we consider the challenging problem of forecasting rainfall in a tropical region, and evaluate whether a GAN is able to learn the properties of rainfall in a region where convection is dominant. We also combine the ML with a conventional postprocessing technique (quantile mapping), in order to leverage the strengths of both methods. We compare against ECMWF IFS forecasts, with quantile mapping also applied - this gives a baseline that is stronger than unmodified forecasts as commonly used in previous work on ML-based forecasting, giving a stronger test of whether ML can improve upon the state-of-the-art. 
 
 This paper is structured as follows ... 
 
-\section{Background and Related work}
 
-\subsection{East African Weather}
+% \subsection{Statistical Post-processing}
+
+% Statistical postprocessing techniques cover a wide spectrum, from simple methods such as subtracting the mean bias, to complex statistical and machine learning approaches (see~\cite{vannitsem_statistical_2021} for a comprehensive overview). 
+
+
+% In this work we are concerned with producing short term precipitation forecasts that will be useful in applications such as flood modelling, and which achieve the highest resolution possible. For this reason we are particularly interested in statistical postprocessing techniques that can produce spatially realistic predictions, and that can produce an ensemble from a single deterministic forecast (since deterministic forecasts tend to be higher resolution than ensemble forecasts). Therefore previous approaches that predict the parameters of a known output probability distribution at each grid cell, such as~\citep{rasp_neural_2018}, or those that use deterministic models to correct forecasts~\citep{gronquist_deep_2021, han_deep_2021, horat_deep_2023} are not appropriate.
+
+% One of the most widely used machine learning models that can learn to sample realistic images from a target distribution is a Generative Adversarial Network or GAN~\citep{goodfellow_generative_2014}. Several works have demonstrated the effectiveness of GANs in a range of tasks; in \cite{leinonen_stochastic_2020} a GAN was trained to downscale low resolution observations~\citep{leinonen_stochastic_2020}.~\cite{harris_generative_2022} and~\cite{price_increasing_2022} then applied the same approach to the problem of downscaling coarse resolution forecasts towards radar observations. There are several works that have use GANs to postprocess precipitation forecasts: e.g.~\cite{duncan_generative_2022} have used a GAN to post-process the output of a machine learning model, and~\cite{jeong_correcting_2023} used a cyclical GAN to perform corrections of precipitation forecasts over South Korea.
+
+% Aside from GANs, other deep learning approaches that have recently been successfully applied to downscaling forecasts are diffusion models~\citep{li_seeds_2023, addison_machine_2022, leinonen_latent_2023} and transformer models~\citep{ben-bouallegue_improving_2023}. Another approach that has been investigated in relatively few works in the weather forecasting domain is using the energy score as loss function to train a network~\cite{pacchiardi_probabilistic_2021}; whilst this approach has desirable properties relative to a GAN, such as ease of training and well-calibrated distributions, it isn't clear how coherent the resultant spatial distribution would be using this method. 
+
+
+\section{Methods}
+\subsection{Region}
 
 
 \begin{figure}[t]
@@ -93,27 +105,13 @@ This paper is structured as follows ...
     \label{fig:region}
 \end{figure}
 
-The region we consider in this study is roughly centred around Kenya and Lake Victoria, sometimes referred to as Equatorial East Africa (see Fig.~\ref{fig:region}). The region is large and so the rainfall characteristics are very heterogeneous, but the region can broadly be divided into two regions, a "summer rainfall" region (containing e.g.~South Sudan, North-Western Ethiopia, Djibouti, and Coastal regions) and an ``equatorial rainfall" region (containing e.g.~Kenya, Uganda, Northern Tanzania and Southern Ethiopia)~\citep{nicholson_climate_2017}. Within the summer rainfall region the rain mainly falls in the boreal summer, whilst the equatorial rainfall region has two rainy seasons; the `long' rains in March-May, and the `short' rains in October-December. The long rains tend to be the wettest season, with less interannual variability but more intraseasonal variability, and is generally regarded as the hardest season to forecast~\citep{nicholson_climate_2017, walker_skill_2019, kilavi_extreme_2018}.
+The region we consider in this study is $12^{\circ}\text{S}-15^{\circ}\text{N}$, $25^{\circ}-51^{\circ}\text{E}$, roughly centred around Kenya and Lake Victoria, sometimes referred to as Equatorial East Africa (see Fig.~\ref{fig:region}). The region is large and so the rainfall characteristics are very heterogeneous, but the region can broadly be divided into two regions, a "summer rainfall" region (containing e.g.~South Sudan, North-Western Ethiopia, Djibouti, and Coastal regions) and an ``equatorial rainfall" region (containing e.g.~Kenya, Uganda, Northern Tanzania and Southern Ethiopia)~\citep{nicholson_climate_2017}. Within the summer rainfall region the rain mainly falls in the boreal summer, whilst the equatorial rainfall region has two rainy seasons; the `long' rains in March-May, and the `short' rains in October-December. The long rains tend to be the wettest season, with less interannual variability but more intraseasonal variability, and is generally regarded as the hardest season to forecast~\citep{nicholson_climate_2017, walker_skill_2019, kilavi_extreme_2018}.
 
 Freshwater lakes, such as Lake Victoria and Lake Tanganyika, amongst the largest freshwater lakes in the world, have a significant impact on the surrounding weather. Around Lake Victoria there is rain for much of the year with storms frequently occurring on or near the lake~\citep{macleod_drivers_2021, chamberlain_forecasting_2014, woodhams_identifying_2019}. These cause wind and waves that cause significant damage to the large population that relies on it, with an estimated 3000-5000 people dying each year due to capsizing or damaged boats~\citep{ifrc_world_2014}, so that improved forecasting of storms in this area would be incredibly valuable. 
 
 There are also interesting orographic features in the area, such as Mt. Kilimanjaro and Mt. Kenya, and mountains extending along the East African rift from the the Ethiopian highlands down either side of Lake Victoria (which we refer to as the Rift Valley in this work). A gap in this range, the Turkana channel, extending from Northwest Kenya to South Sudan, is another important feature in this area that affects moisture transport via the Turkana jet that flows through it~\citep{nicholson_turkana_2016}.
 
 
-
-\subsection{Statistical Post-processing}
-
-Statistical postprocessing techniques cover a wide spectrum, from simple methods such as subtracting the mean bias, to complex statistical and machine learning approaches (see~\cite{vannitsem_statistical_2021} for a comprehensive overview). 
-
-
-In this work we are concerned with producing short term precipitation forecasts that will be useful in applications such as flood modelling, and which achieve the highest resolution possible. For this reason we are particularly interested in statistical postprocessing techniques that can produce spatially realistic predictions, and that can produce an ensemble from a single deterministic forecast (since deterministic forecasts tend to be higher resolution than ensemble forecasts). Therefore previous approaches that predict the parameters of a known output probability distribution at each grid cell, such as~\citep{rasp_neural_2018}, or those that use deterministic models to correct forecasts~\citep{gronquist_deep_2021, han_deep_2021, horat_deep_2023} are not appropriate.
-
-One of the most widely used machine learning models that can learn to sample realistic images from a target distribution is a Generative Adversarial Network or GAN~\citep{goodfellow_generative_2014}. Several works have demonstrated the effectiveness of GANs in a range of tasks; in \cite{leinonen_stochastic_2020} a GAN was trained to downscale low resolution observations~\citep{leinonen_stochastic_2020}.~\cite{harris_generative_2022} and~\cite{price_increasing_2022} then applied the same approach to the problem of downscaling coarse resolution forecasts towards radar observations. There are several works that have use GANs to postprocess precipitation forecasts: e.g.~\cite{duncan_generative_2022} have used a GAN to post-process the output of a machine learning model, and~\cite{jeong_correcting_2023} used a cyclical GAN to perform corrections of precipitation forecasts over South Korea.
-
-Aside from GANs, other deep learning approaches that have recently been successfully applied to downscaling forecasts are diffusion models~\citep{li_seeds_2023, addison_machine_2022, leinonen_latent_2023} and transformer models~\citep{ben-bouallegue_improving_2023}. Another approach that has been investigated in relatively few works in the weather forecasting domain is using the energy score as loss function to train a network~\cite{pacchiardi_probabilistic_2021}; whilst this approach has desirable properties relative to a GAN, such as ease of training and well-calibrated distributions, it isn't clear how coherent the resultant spatial distribution would be using this method. 
-
-
-\section{Methods}
 \subsection{Data}
 
 \label{sec:data}
@@ -124,9 +122,7 @@ For observational data, we use the Integrated Multi-satellite Retrievals for GPM
 
 Whilst the IMERG data does not perfectly represent the true rainfall, it performs reasonably well at capturing the diurnal cycle and distribution of rainfall in East Africa~\citep{dezfuli_validation_2017, roca_comparing_2010, camberlin_major_2018} compared to other alternatives, particularly given the scarcity of reliable rain gauge and radar data in the area.  In~\cite{ageet_validation_2022} they compare a range of satellite rainfall estimating products including the IMERG product, by comparing the satellite estimates with rain gauges in an area around Uganda (including parts of Kenya, Tanzania, Sudan and the Democratic Republic of Congo) over 17 years. Based on a combined assessment of quantile-quantile plots, correlation, and skill scores such as hit rate and false alarms, they identify the IMERG product as the best performing at a daily level. However, it still has biases. For example it has a tendency to underestimate the rainfall rate, and over-predict the frequency of rainfall. There are also known issues with similar satellite products in mountainous areas~\citep{dinku_comparison_2010}, which means these observations may be more unreliable over areas such as the Ethiopian Highlands and parts of the Rift Valley. A dry bias has also been observed in several studies (e.g.~\cite{vogel_skill_2018}). Overall, though, it provides a good source of data with a high temporal and spatial resolution over our target region, and it has been used in other studies in this area (e.g.~\cite{woodhams_what_2018, finney_implications_2019, cafaro_convection-permitting_2021}).
 
-The forecast dataset used is the ECMWF IFS HRES deterministic hourly forecast~\citep{ecmwf_operational_2023} as this tends to perform amongst the best compared to similar models~\citep{haiden_intercomparison_2012}. IFS forecasts are provided at 00h and 12h and we use lead times within a 6-18h window, corresponding to short-range weather prediction (however it is expected that the method we use could also equally apply to longer lead times). 
-
-Data is taken over $12^{\circ}\text{S}-15^{\circ}\text{N}$, $25^{\circ}-51^{\circ}\text{E}$, using the same grid points as the IMERG data. IFS forecasts are interpolated from $9\text{km} \times 9\text{km}$ resolution to $0.1^{\circ} \times 0.1^{\circ}$, to match that of the IMERG precipitation.
+The forecast dataset used is the ECMWF IFS HRES deterministic hourly forecast~\citep{ecmwf_operational_2023} as this tends to perform amongst the best compared to similar models~\citep{haiden_intercomparison_2012}. IFS forecasts are provided at 00h and 12h and we use lead times within a 6-18h window, corresponding to short-range weather prediction (however it is expected that the method we use could also equally apply to longer lead times). The data is interpolated from $9\text{km} \times 9\text{km}$ resolution to $0.1^{\circ} \times 0.1^{\circ}$ to match the grid points of the IMERG precipitation.
 
 The dataset was split up as follows:
 \begin{itemize}
@@ -134,14 +130,13 @@ The dataset was split up as follows:
     \item Validation set: Jun 2018, Oct 2018, Jan 2019, March 2019
     \item Test sets: October 2020 - September 2021, March - May 2018
 \end{itemize}
-The data starts at March 2016, after the increase in horizontal resolution for the IFS with the release of Cycle 41r2. We use data up until September 2021 since there was an upgrade to the convection parameterization scheme with the release of Cycle 47r3 in October 2021~\cite{ecmwf_changes_2023}. 
+The data starts at March 2016, after the increase in horizontal resolution for the IFS with the release of Cycle 41r2. We use data up until September 2021 since there was an upgrade to the convection parameterization scheme with the release of Cycle 47r3 in October 2021~\cite{ecmwf_changes_2023}. Note also that we keep 2018 long rains (March-May) as an extreme test set, since this was a period of particularly heavy rainfall~\citep{kilavi_extreme_2018} for which the seasonal rainfall was significantly higher than any years used in training and validation. 
 
 The standard choice of validation set would be from within the year preceding the test period; however, we observed that the long rains of 2020 were particularly high, and so to avoid validation over an atypical year we chose to validate over the period of June 2018-May 2019. Rather than use a full year for validation, we chose to maximise the amount of training data by including a month from each of the different seasons in the validation period. 
 
-Unless indicated otherwise, all results reported in this work are evaluated on 4000 unique hours sampled uniformly over all dates from the unseen test period October 2020 - September 2021.
+All evaluation results reported in Secs.~\ref{sec:climatologic} and~\ref{sec:fcst_skill} are evaluated on 4000 unique hours sampled uniformly over all dates from the unseen test period October 2020 - September 2021. The ensemble calibration results in Sec.~\ref{sec:ens_calib} are assessed over 1000 unique hours sampled uniformly from the same period. 
 
-Note also that we leave out the 2018 long rains (March-May) to test against since this was a period of particularly heavy rainfall~\citep{kilavi_extreme_2018}, and so will shed light on how well the model extrapolates to extreme rainfall. 
-
+For the extreme rainfall evaluation in Sec.~\ref{Sec:extreme}, we analyse all of the hours from March-May 2018. Since much of the anomalous rainfall in this season was concentrated over Kenya, we restrict our analysis to this region ($4.6^{\circ}\text{S}-5.1^{\circ}\text{N}$, $33.2^{\circ}-43.1^{\circ}\text{E}$).
 
 
 \subsection{Machine Learning Model}
@@ -256,7 +251,7 @@ For many diagnostics, particularly those concerned with high rainfall events, th
 
 
 
-\section{Results}
+\section{Evaluation on normal test set}
 
 
 
@@ -288,7 +283,7 @@ For many diagnostics, particularly those concerned with high rainfall events, th
      \centering
      \includegraphics[width=1.05\textwidth]{images/cGAN_samples_IFS_final-nologs_217600.pdf}
      
-     \caption{Example precipitation forecasts following postprocessing by the cGAN-qm model, for a selection of hours throughout the test year (first column). The columns from left to right show: a single member of the cGAN-qm ensemble, the average of 20 cGAN-qm ensemble members, the IMERG observations, the IFS-qm forecast. Each row corresponds to one time value, shown in the title of the IMERG sample.  }
+     \caption{Example precipitation forecasts following postprocessing by the cGAN-qm model, for a selection of hours throughout the test year (first column). The columns from left to right show: a single member of the cGAN-qm ensemble, the average of 20 cGAN-qm ensemble members, the IMERG observations, the IFS-qm forecast. Each row corresponds to one time value, shown in the title of the IMERG sample. The examples were chosen from a randomly selected set of images, such that there is at least one example from each of the seasons, and also such that ...  }
      \label{fig:examples}
 \end{figure}
 
@@ -315,20 +310,9 @@ For many diagnostics, particularly those concerned with high rainfall events, th
 
 
 \begin{figure}[t]
+    \includegraphics[width=\textwidth]{images/diurnal_cycle_final-nologs_217600.pdf}
     \centering
-     \begin{subfigure}[t]{0.33\textwidth}
- \includegraphics[width=\textwidth]{images/diurnal_cycle_mean_final-nologs_217600.pdf}
-     \caption{}
-     \end{subfigure}
-     \begin{subfigure}[t]{0.32\textwidth}
-     \includegraphics[width=\textwidth]{images/diurnal_cycle_quantile_999_final-nologs_217600.pdf}
-     \caption{}
-     \end{subfigure}
-     \begin{subfigure}[t]{0.32\textwidth}
-     \includegraphics[width=\textwidth]{images/diurnal_cycle_quantile_99999_final-nologs_217600.pdf}
-     \caption{}
-     \end{subfigure}
-     \caption{Evaluation of the diurnal cycle by hour (in local time) over the whole domain in; a) mean rainfall, b) $99.9^{\text{th}}$ percentile, c) $99.999^{\text{th}}$ percentile, where percentiles are calculated over all individual grid points. The shaded regions indicate $\pm2$ standard errors about the mean. Note that rainfall at the $99.9^{\text{th}}$ percentile and above is mainly concentrated over Lake Victoria and the ocean.}
+     \caption{Evaluation of the diurnal cycle by hour (in local time) over the whole domain in; (a) mean rainfall, (b) $99.9^{\text{th}}$ percentile, c) $99.99^{\text{th}}$ percentile, where percentiles are calculated over all individual grid points. The shaded regions indicate $\pm2$ standard errors about the mean, estimated by bootstrapping with 50 samples. Note that rainfall at the $99.9^{\text{th}}$ percentile and above is mainly concentrated over Lake Victoria and the ocean.}
      \label{fig:diurnal}
 \end{figure}
 
@@ -364,11 +348,9 @@ For many diagnostics, particularly those concerned with high rainfall events, th
 
 \begin{figure}
 \centering
-     \begin{subfigure}{\textwidth}
+
     \centering
      \includegraphics[width=\textwidth]{images/scatter_mean_final-nologs_217600.pdf}
-     \caption{}
-     \end{subfigure}
      \caption{Scatter plots of predicted versus observed domain-average rainfall, for the cGAN-qm forecasts (left) and IFS-qm forecasts (right). The dashed black lines represents perfect forecasts. The Pearson correlation coefficient is 0.74 for cGAN-qm and 0.61 for IFS-qm.}
      \label{fig:bias}
 \end{figure}
@@ -388,7 +370,8 @@ To get a quantitative picture of the spatial realism of these rainfall patterns,
 
 Biases in the diurnal cycle are not adjusted by the quantile mapping approach that we employ. Summary statistics of the rainfall as a function of hour are plotted in Fig.~\ref{fig:diurnal}, from which it is clear that cGAN-qm is making significant improvements to the diurnal cycle (and these are also present in cGAN). The IFS-qm forecast has a clear bias in mean rainfall around midday that is also prominent for high quantiles (Fig.~\ref{fig:diurnal} (c)), whilst the cGAN-qm mean diurnal cycle is much closer to that of observations. 
 
-We can gain insight into which spatial locations are particularly driving this improvement from the plots of average peak rainfall hour in Fig.~\ref{fig:peak_hour}. The data is smoothed along the time axis using a centred moving average of length 3, in order to remove noise and make it easier to see any patterns in the data. The peak rainfall hour for cGAN-qm is fairly spatially noisy, but improvements can mainly be seen to occur on land. Looking at Lake Victoria (around $-3^{\circ}\text{S}-1^{\circ}\text{N}$, $31^{\circ}-34^{\circ}\text{E}$), we can see that cGAN-qm correctly captures more of the nighttime maxima seen along the East coast of the lake and the morning maxima seen in the central and Western parts (see e.g.~\cite{woodhams_identifying_2019}), although it also tends to have a strong early bias in the land around the Western part of the lake.
+We can gain insight into which spatial locations are particularly driving this improvement from the plots of average peak rainfall hour in Fig.~\ref{fig:peak_hour}. The data is smoothed along the time axis using a centred moving average of length 3, in order to remove noise and make it easier to see any patterns in the data. The peak rainfall hour for cGAN-qm is fairly spatially noisy, but improvements can mainly be seen to occur on land. Looking at Lake Victoria (around $1^{\circ}\text{S}
+$, $33^{\circ}\text{E}$), we can see that cGAN-qm correctly captures more of the nighttime maxima seen along the East coast of the lake and the morning maxima seen in the central and Western parts (see e.g.~\cite{woodhams_identifying_2019}), although it also tends to have a strong early bias in the land around the Western part of the lake.
 
 
 The plot of average bias in Fig.~\ref{fig:bias} (a) shows that on average the cGAN-qm under-predicts rainfall on the test set whilst IFS-qm over-predicts. cGAN-qm also reduces the most prominent average biases of IFS-qm occurring over the Ethiopian highlands, Lake Victoria and the Western side of the East African rift, near Rwanda and Burundi. The effects on the bias in the standard deviation in Fig.~\ref{fig:bias} (b) are less obvious, there is some reduction in the sharpness of the peaks around the Ethiopian highlands, coastal regions and over the ocean, but there are also areas of increased negative bias in other parts of the ocean and in the western part of the domain over the Democratic Republic of Congo. 
@@ -398,29 +381,7 @@ The scatter plot in Fig.~\ref{fig:bias} shows how each model captures the domain
 
 
 \begin{figure}[t]
-    \centering
-     \begin{subfigure}[t]{0.32\textwidth}
-    \centering
- \includegraphics[width=\textwidth]{images/fss_q90th_final-nologs_217600.pdf}
-     \caption{}
-     \end{subfigure}
-     \centering
-     \begin{subfigure}[t]{0.32\textwidth}
-     \includegraphics[width=\textwidth]{images/fss_q99th_final-nologs_217600.pdf}
-     \caption{}
-     \end{subfigure}
-     \begin{subfigure}[t]{0.32\textwidth}
-     \includegraphics[width=\textwidth]{images/fss_q99.9th_final-nologs_217600.pdf}
-     \caption{}
-     \end{subfigure}
-     \begin{subfigure}[t]{0.32\textwidth}
-     \includegraphics[width=\textwidth]{images/fss_q99.99th_final-nologs_217600.pdf}
-     \caption{}
-     \end{subfigure}
-     \begin{subfigure}[t]{0.32\textwidth}
-     \includegraphics[width=\textwidth]{images/fss_q99.999th_final-nologs_217600.pdf}
-     \caption{}
-     \end{subfigure}
+    \centering\includegraphics[width=\textwidth]{images/fss_final-nologs_217600.pdf}
      \caption{Fractions Skill Score results for different quantile thresholds (a) $90^{\text{th}}$ percentile (b) $99^{\text{th}}$ percentile (c) $99.9^{\text{th}}$ percentile (d) $99.99^{\text{th}}$ percentile (e) $99.999^{\text{th}}$ percentile. The red dashed lines indicate the `useful' threshold of 0.5 that is typically used to interpret this score. Error bars indicate $\pm2$ standard errors estimated from bootstrapping with 50 samples. Note that rainfall at the $99.9^{\text{th}}$ percentile and above is mainly concentrated over Lake Victoria and over the ocean. }
      \label{fig:fss}
 \end{figure}
@@ -429,7 +390,7 @@ The scatter plot in Fig.~\ref{fig:bias} shows how each model captures the domain
 
 
 \subsection{Forecast skill assessment}
-
+\label{sec:fcst_skill}
 
 We now look at skill at predicting specific rainfall events, focusing on occurrences of rainfall above a certain threshold. We start with the Fractions Skill Score (FSS)~\citep{roberts_assessing_2008, roberts_scale-selective_2008}. In Fig.~\ref{fig:fss} we show plots of FSS for different quantile thresholds, where the quantiles are calculated over the whole domain rather than for each grid cell individually.
 
@@ -465,7 +426,7 @@ The ETS for several thresholds over the whole domain is shown in Fig.~\ref{fig:e
 
         
 \subsection{Assessment of ensemble calibration}
-
+\label{sec:ens_calib}
 
 \begin{figure}[!ht]
     \centering
@@ -511,17 +472,34 @@ TODO: explain spread erro plot in light of rank histogram?
 
 % There is also an apparent contradiction between the spread-error plot result and the rank histogram: The spread-error plot appears to show over-dispersion with high rainfall values, while the rank histogram appears to show under-dispersion at high rainfall values. An explanation for this could be down to the fact that the rank histogram measures ordering and is insensitive to the particular error values, unlike the spread-error. Then potentially the spread-error is being skewed by a small number of forecasts that produce very high predictions, which doesn't show up on the rank histograms.
 
-% \section{Evaluation on extreme test set}
+\section{Evaluation on extreme test set}
 
-% ...
+In this section we evaluate the performance of the cGAN-qm model on the extreme test set, March-May 2018.
 
+
+\begin{figure}[h]
+     \centering
+     \includegraphics[width=1.05\textwidth]{images/scatter_cl100-medium-nologs_217600_kenya.pdf}
+     
+     \caption{
+     }
+     \label{fig:examples}
+\end{figure}
+
+\begin{figure}[ht!]
+     \centering
+     \includegraphics[width=0.5\textwidth]{images/histograms_final-nologs-mam2018_217600_kenya.pdf}
+     
+     \caption{
+     }
+     \label{fig:examples}
+\end{figure}
 
 % A visual inspection of samples produced by the cGAN (Fig.~\ref{fig:cgan_sample}) confirms that it produces realistic spatial rainfall patterns; general features seem to be that the cGAN removes some of the wet bias at low intensities, and more accurately represent the high intensity rainfall. We use the radially-averaged spectral density as a measure of the spatial structure of the forecasts, shown in Fig.~\ref{fig:metrics}(a); this shows that the cGAN samples have a closer resemblance to the spectral density than the original forecast (although the cGAN tends to overpredict at high wavenumber - corresponding to smaller length scales). Compared to the quantile mapped forecast, the cGAN appears to do better at medium-range wavenumbers, but less well at higher wavenumbers. The cGAN also successfully corrects the position of the peak in diurnal cycle of the IFS (shown for the whole region in Fig.~\ref{fig:metrics}(c)), although it shows an overprediction in the peak height.
 
 % Quantile-quantile plots reveal that the cGAN is able to correct the forecast bias up to the 99.99th percentile. However, beyond this there is extreme overprediction of high rainfall; this is an effect noted in~\citep{harris_generative_2022}, for which they introduced a rainfall threshold to cut off extremely high values. Also all the scores in~\citep{leinonen_stochastic_2020} were calculated after converting the rainfall to the range [0,1], and so any errors in intensity would not have registered in their analysis. A natural question to ask is why the discriminator in the GAN is unable to pick up on these extreme intensities; one explanation could be that GAN discriminators are known to be poor at learning for any frequency components in the image that have low magnitude (which in this case are the high frequency components)~\citep{schwarz_frequency_2021}. 
 
 % note that the results capture the earlier peak rainfall in southeastern Lake Victoria, as mentioned in \citep{finney_implications_2019}.
-
 
 \section{Conclusions}
 
