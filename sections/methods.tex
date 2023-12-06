@@ -167,6 +167,9 @@ To evaluate the optimal grouping in the spatial domain, the mean square error of
 Since our validation and training datasets are reasonably small, it is important to assess the effects of sampling variability by investigating the variance in the quantiles derived from the data; this gives insight as to where differences are due to model error and where they are due to sampling variability in the training and test sets. There are multiple approaches to do this; common approaches are via resampling methods such as subsampling and bootstrapping~\citep{efron_6_1982}. The subsampling approach involves estimating a quantity with $k$ samples removed from the data to infer the variance of the quantity. In the bootstrapping approach, many resampled datasets with the same dimension as the original are created by sampling with replacement from the full dataset, allowing an estimate of the variance in the quantity to be made. The two approaches approximate each other~\citep{efron_6_1982}, and in our case we observed negligible differences between the two, so we used bootstrapping. Another alternative is the Maritz-Jarrett method~\citep{wilcox_chapter_2022}, which calculates errors based on sums of the input variables weighted by incomplete Beta distribution functions; however, the standard Python implementation of this appeared to be much too slow for our data size.
 
 
+
+
+
 % \begin{figure}[b]
 %      \centering
 %      \includegraphics[width=\textwidth]{Resnet_structure.png}
